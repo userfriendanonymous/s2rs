@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use crate::{api::{Api, Tokens, self}, entities::{User, Project, Studio, Me}};
+use crate::{api::{Api, Tokens, self}, entities::{User, Project, Studio, Me, ForumTopic, ForumPost}};
 
 /// Session abstracts away plain and flat api requests and makes library usage very intuitive.
 /// # Example
@@ -45,6 +45,14 @@ impl Session {
 
     pub fn studio(&self, id: u64) -> Arc<Studio> {
         Studio::new(id, self.api.clone())
+    }
+
+    pub fn forum_topic(&self, id: u64) -> Arc<ForumTopic> {
+        ForumTopic::new(id, self.api.clone())
+    }
+
+    pub fn forum_topic_post(&self, id: u64) -> Arc<ForumPost> {
+        ForumPost::new(id, self.api.clone())
     }
 
     pub fn me(&self) -> Arc<Me> {

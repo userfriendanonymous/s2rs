@@ -22,6 +22,7 @@ pub use front_page::*;
 pub use language::*;
 pub use explore::*;
 pub use search::*;
+pub use forum::*;
 
 pub mod user;
 pub mod project;

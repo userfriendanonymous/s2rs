@@ -4,19 +4,19 @@ use super::{GeneralResult, utils::RequestBuilderUtils};
 #[cfg(feature = "time")] use chrono::{DateTime, Utc};
 
 #[cfg(feature = "time")]
-pub struct ForumRssTopic {
+pub struct ForumTopicRss {
     pub title: String,
     pub id: u64,
     pub updated_at: DateTime<Utc>,
-    pub posts: Vec<ForumRssTopicPost>,
+    pub posts: Vec<ForumTopicRssPost>,
 }
 
 #[cfg(feature = "rss")]
-impl ForumRssTopic {
+impl ForumTopicRss {
     pub fn try_from_rss(data: feed_rs::model::Feed) -> Result<Self, ParsingCustomError> {
         let mut posts = Vec::new();
         for entry in data.entries {
-            posts.push(ForumRssTopicPost::try_from_rss(entry)?);
+            posts.push(ForumTopicRssPost::try_from_rss(entry)?);
         }
         Ok(Self {
             id: data.id.split('/').rev().nth(1).ok_or(())?.parse().ok().ok_or(())?,
@@ -28,7 +28,7 @@ impl ForumRssTopic {
 }
 
 #[cfg(feature = "time")]
-pub struct ForumRssTopicPost {
+pub struct ForumTopicRssPost {
     pub id: u64,
     pub created_at: DateTime<Utc>,
     pub author_name: String,
@@ -36,7 +36,7 @@ pub struct ForumRssTopicPost {
 }
 
 #[cfg(feature = "rss")]
-impl ForumRssTopicPost {
+impl ForumTopicRssPost {
     pub fn try_from_rss(mut data: feed_rs::model::Entry) -> Result<Self, ParsingCustomError> {
         if data.authors.get(0).is_none() {
             Err(())?
@@ -57,9 +57,9 @@ impl Api {
     }
 
     #[cfg(feature = "rss")]
-    pub async fn get_forum_rss_topic(&self, id: u64) -> GeneralResult<ForumRssTopic> {
+    pub async fn get_forum_topic_rss(&self, id: u64) -> GeneralResult<ForumTopicRss> {
         let response = self.get_base(&format!["discuss/feeds/topic/{id}/"]).send_success().await?;
         let feed = feed_rs::parser::parse(response.text().await?.as_bytes()).map_err(|_| ParsingCustomError)?;
-        Ok(ForumRssTopic::try_from_rss(feed)?)
+        Ok(ForumTopicRss::try_from_rss(feed)?)
     }
 }
