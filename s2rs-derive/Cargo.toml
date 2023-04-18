@@ -1,0 +1,13 @@
+[package]
+name = "s2rs-derive"
+version = "0.1.0"
+license = "MIT"
+edition = "2021"
+description = "s2rs internal macros, should not be used directly."
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = "1.0.26"
+syn = { version = "2.0.13", features = ["full"] }
