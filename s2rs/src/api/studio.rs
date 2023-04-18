@@ -19,6 +19,20 @@ pub struct Studio {
 }
 
 #[derive(Deserialize, Debug)]
+pub struct Studio2 {
+    pub id: u64,
+    pub title: String,
+    pub host: u64,
+    pub description: String,
+    pub visibility: String,
+    pub public: bool,
+    pub open_to_all: bool,
+    pub comments_allowed: bool,
+    pub image: String,
+    pub history: StudioHistory,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct StudioHistory {
     pub created: String,
     pub modified: String,

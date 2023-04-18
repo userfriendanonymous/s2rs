@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use crate::Api;
-use super::{GeneralResult, utils::{RequestBuilderUtils, ResponseUtils}};
+use super::{GeneralResult, utils::{RequestBuilderUtils, ResponseUtils}, general_parser::GeneralParser};
 
 #[derive(Debug, Deserialize)]
 pub struct FrontPage {
@@ -11,6 +11,19 @@ pub struct FrontPage {
     pub most_remixed_projects: Vec<FrontPageMostRemixedProject>,
     pub most_loved_projects: Vec<FrontPageMostLovedProject>,
     pub design_studio_projects: Vec<FrontPageDesignStudioProject>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct News {
+    pub id: u64,
+    #[serde( rename = "stamp" )]
+    pub at: String,
+    #[serde( rename = "headline" )]
+    pub title: String,
+    pub url: String,
+    pub image: String,
+    #[serde( rename = "copy" )]
+    pub description: String,
 }
 
 // region: structures
@@ -95,5 +108,16 @@ impl Api {
     pub async fn get_front_page(&self) -> GeneralResult<FrontPage> {
         let response = self.get_proxy("featured/").send_success().await?;
         Ok(response.json().await?)
+    }
+
+    pub async fn get_news(&self) -> GeneralResult<Vec<News>> {
+        let response = self.get("news").send_success().await?;
+        Ok(response.json().await?)
+    }
+
+    pub async fn get_projects_count(&self) -> GeneralResult<u64> {
+        let response = self.get("projects/count/all/").send_success().await?;
+        let data: GeneralParser = response.json::<GeneralParser>().await?;
+        Ok(data.i("count").u64()?)
     }
 }

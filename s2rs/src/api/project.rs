@@ -9,7 +9,7 @@ pub struct PartialProject2 {
     pub id: u64,
     pub title: String,
     pub description: String,
-    pub instructions: String, 
+    pub instructions: String,
     pub visibility: String,
     pub public: bool,
     pub comments_allowed: bool,
