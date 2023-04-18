@@ -42,6 +42,29 @@ pub struct UserHistory {
     pub joined: String
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum UserNameCheck {
+    Valid,
+    Invalid,
+    Bad,
+    Taken,
+}
+
+impl<'de> Deserialize<'de> for UserNameCheck {
+    fn deserialize<D>(d: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
+        use serde::de::Error;
+        Ok(match Value::deserialize(d)?.as_object().ok_or(D::Error::custom("expected object"))?
+        .get("msg").ok_or(D::Error::custom("'msg' field not found"))?
+        .as_str().ok_or(D::Error::custom("'msg' field must be string"))? {
+            "invalid username" => Self::Invalid,
+            "valid username" => Self::Valid,
+            "username exists" => Self::Taken,
+            "bad username" => Self::Bad,
+            msg => Err(D::Error::custom(format!["invalid 'msg' field value: `{msg}`"]))?
+        })
+    }
+}
+
 // region: UserInfo
 #[derive(Debug, Default, Serialize)]
 pub struct UserInfo {
@@ -165,5 +188,9 @@ impl Api {
         .send_success().await?;
         Ok(())
     }
-    
+
+    pub async fn check_user_name(&self, name: &str) -> GeneralResult<UserNameCheck> {
+        let response = self.get(&format!["accounts/checkusername/{name}/"]).send_success().await?;
+        Ok(response.json().await?)
+    }
 }

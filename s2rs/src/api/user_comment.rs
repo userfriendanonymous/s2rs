@@ -2,8 +2,8 @@ use super::Api;
 #[cfg(feature = "html")] use html_parser::{Dom, Element};
 use serde_json::json;
 #[cfg(feature = "html")] use crate::cursor::Cursor;
-#[cfg(feature = "html")] use super::{utils::RequestBuilderUtils, ParsingCustomError};
-use super::GeneralResult;
+#[cfg(feature = "html")] use super::ParsingCustomError;
+use super::{GeneralResult, utils::RequestBuilderUtils};
 // const NUMBERS: &str = "1234567890";
 
 #[derive(Debug)]

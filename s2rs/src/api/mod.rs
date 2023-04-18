@@ -18,6 +18,7 @@ pub use studio_project::*;
 pub use user_comment::*;
 pub use cloud_action::*;
 pub use user_featured::*;
+pub use front_page::*;
 
 pub mod user;
 pub mod project;
@@ -33,6 +34,7 @@ pub mod cloud_action;
 pub mod cloud;
 pub mod forum;
 pub mod user_featured;
+pub mod front_page;
 mod utils;
 mod url_path;
 mod general_parser;
@@ -284,6 +286,10 @@ impl Api {
     // endregion: site-api
 
     // region: proxy
+    fn get_proxy(&self, path: &str) -> RequestBuilder {
+        self.request_proxy(Method::GET, path)
+    }
+
     fn request_proxy(&self, method: Method, path: &str) -> RequestBuilder {
         self.request(method, &self.urls.api, &format!("proxy/{path}"))
     }
