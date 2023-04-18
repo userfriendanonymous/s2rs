@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use crate::cursor::Cursor;
-use super::{Api, utils::{ResponseUtils, RequestBuilderUtils}, ParsingCustomError, GeneralResult, PartialProject2};
+use super::{Api, utils::{ResponseUtils, RequestBuilderUtils}, ParsingCustomError, GeneralResult, Project2};
 
 #[derive(Deserialize, Debug)]
 pub struct User {
@@ -132,12 +132,12 @@ impl Api {
         Ok(response.json().await?)
     }
 
-    pub async fn get_projects_loved_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<PartialProject2>> {
+    pub async fn get_projects_loved_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project2>> {
         let response = self.get(&format!["users/{name}/following/users/loves/"]).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_projects_shared_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<PartialProject2>> {
+    pub async fn get_projects_shared_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project2>> {
         let response = self.get(&format!["users/{name}/following/users/projects/"]).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }

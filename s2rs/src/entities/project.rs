@@ -206,7 +206,7 @@ impl ProjectAuthor {
 }
 // endregion: ProjectAuthor
 
-// region: PartialProject
+// region: Project3
 /// Partial project
 /// - Used to map some parts of API that return project metadata which is not the same as [`ProjectMeta`]
 /// # Examples TODO
@@ -221,13 +221,13 @@ impl ProjectAuthor {
 /// ```
 #[derive(Debug)]
 #[deref(this)]
-pub struct PartialProject {
+pub struct Project3 {
     pub this: Arc<ProjectCore>,
-    pub author: api::PartialProjectAuthor,
+    pub author: api::Project3Author,
 }
 
-impl PartialProject {
-    pub fn with_this_this(data: api::PartialProject, this: Arc<ProjectWithTitle>) -> Arc<Self> {
+impl Project3 {
+    pub fn with_this_this(data: api::Project3, this: Arc<ProjectWithTitle>) -> Arc<Self> {
         Arc::new(Self {
             author: data.author,
             this: ProjectCore::with_this(
@@ -248,33 +248,33 @@ impl PartialProject {
         })
     }
 
-    pub fn with_this_this_this(data: api::PartialProject, this: Arc<Project>) -> Arc<Self> {
+    pub fn with_this_this_this(data: api::Project3, this: Arc<Project>) -> Arc<Self> {
         let title = data.title.clone();
         Self::with_this_this(data, ProjectWithTitle::with_this(title, this))
     }
 
-    pub fn new(data: api::PartialProject, api: Arc<Api>) -> Arc<Self> {
+    pub fn new(data: api::Project3, api: Arc<Api>) -> Arc<Self> {
         let id = data.id;
         let title = data.title.clone();
         Self::with_this_this(data, ProjectWithTitle::new(title, id, api))
     }
 
-    pub fn vec_new(data: Vec<api::PartialProject>, api: Arc<Api>) -> Vec<Arc<Self>> {
+    pub fn vec_new(data: Vec<api::Project3>, api: Arc<Api>) -> Vec<Arc<Self>> {
         data.into_iter().map(|data| Self::new(data, api.clone())).collect()
     }
 }
-// endregion: PartialProject
+// endregion: Project3
 
-// region: PartialProject2
+// region: Project2
 #[deref(this)]
 #[derive(Debug)]
-pub struct PartialProject2 {
+pub struct Project2 {
     pub this: Arc<ProjectCore>,
     pub author: ProjectAuthor,
 }
 
-impl PartialProject2 {
-    pub fn with_this_this(data: api::PartialProject2, this: Arc<ProjectWithTitle>, api: Arc<Api>) -> Arc<Self> {
+impl Project2 {
+    pub fn with_this_this(data: api::Project2, this: Arc<ProjectWithTitle>, api: Arc<Api>) -> Arc<Self> {
         Arc::new(Self {
             author: ProjectAuthor::new(data.author, api),
             this: ProjectCore::with_this(
@@ -295,22 +295,22 @@ impl PartialProject2 {
         })
     }
 
-    pub fn with_this_this_this(data: api::PartialProject2, this: Arc<Project>, api: Arc<Api>) -> Arc<Self> {
+    pub fn with_this_this_this(data: api::Project2, this: Arc<Project>, api: Arc<Api>) -> Arc<Self> {
         let title = data.title.clone();
         Self::with_this_this(data, ProjectWithTitle::with_this(title, this), api)
     }
 
-    pub fn new(data: api::PartialProject2, api: Arc<Api>) -> Arc<Self> {
+    pub fn new(data: api::Project2, api: Arc<Api>) -> Arc<Self> {
         let id = data.id;
         let title = data.title.clone();
         Self::with_this_this(data, ProjectWithTitle::new(title, id, api.clone()), api)
     }
 
-    pub fn vec_new(data: Vec<api::PartialProject2>, api: Arc<Api>) -> Vec<Arc<Self>> {
+    pub fn vec_new(data: Vec<api::Project2>, api: Arc<Api>) -> Vec<Arc<Self>> {
         data.into_iter().map(|data| Self::new(data, api.clone())).collect()
     }
 }
-// endregion: PartialProject2
+// endregion: Project2
 
 // region: Project
 

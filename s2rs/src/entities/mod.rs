@@ -32,8 +32,15 @@ pub mod user_featured;
 pub mod me;
 pub mod front_page;
 
-#[cfg(feature = "stream")] mod stream;
-#[cfg(feature = "stream")] mod user_stream;
-#[cfg(feature = "stream")] mod project_stream;
-#[cfg(feature = "stream")] mod studio_stream;
+#[cfg(feature = "stream")] pub mod stream;
+#[cfg(feature = "stream")] pub mod user_stream;
+#[cfg(feature = "stream")] pub mod project_stream;
+#[cfg(feature = "stream")] pub mod studio_stream;
+#[cfg(feature = "stream")] pub mod search;
+#[cfg(feature = "stream")] pub mod explore;
 
+#[cfg(feature = "stream")] pub use user_stream::*;
+#[cfg(feature = "stream")] pub use project_stream::*;
+#[cfg(feature = "stream")] pub use studio_stream::*;
+#[cfg(feature = "stream")] pub use search::*;
+#[cfg(feature = "stream")] pub use explore::*;

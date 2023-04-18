@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use crate::{api::{Api, Tokens, self}, entities::{User, Project, Studio}, Me};
+use crate::{api::{Api, Tokens, self}, entities::{User, Project, Studio, Me}};
 
 /// Session abstracts away plain and flat api requests and makes library usage very intuitive.
 /// # Example

@@ -1,7 +1,7 @@
 
 use std::sync::Arc;
-use crate::{StudioWithTitle, api, Api};
-use super::{ProjectWithTitle, User};
+use crate::{api, Api};
+use super::{ProjectWithTitle, User, StudioWithTitle};
 
 #[derive(Debug)]
 pub struct FrontPage {

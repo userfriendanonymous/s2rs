@@ -1,23 +1,23 @@
 use crate::{Api, cursor::Cursor};
-use super::{Language, PartialProject2, GeneralResult, utils::{RequestBuilderUtils, ResponseUtils}, Studio2};
+use super::{Language, Project2, GeneralResult, utils::{RequestBuilderUtils, ResponseUtils}, Studio2};
 
-#[derive(Debug)]
-pub struct ExploreQuery<'a> {
-    pub query: Option<&'a str>,
-    pub mode: Option<&'a ExploreMode>,
-    pub language: Option<&'a Language>,
+#[derive(Debug, Clone)]
+pub struct ExploreQuery {
+    pub query: Option<String>,
+    pub mode: Option<ExploreMode>,
+    pub language: Option<Language>,
 }
 
-impl<'a> ExploreQuery<'a> {
+impl ExploreQuery {
     pub fn as_query(&self) -> Vec<(&str, &str)> {
         let mut result = Vec::new();
-        if let Some(query) = self.query {
-            result.push(("q", query))
+        if let Some(query) = &self.query {
+            result.push(("q", query.as_str()))
         }
-        if let Some(mode) = self.mode {
+        if let Some(mode) = &self.mode {
             result.push(("mode", mode.as_ref()))
         }
-        if let Some(language) = self.language {
+        if let Some(language) = &self.language {
             result.push(("language", language.as_code()))
         }
         result
@@ -40,12 +40,12 @@ impl AsRef<str> for ExploreMode {
 }
 
 impl Api {
-    pub async fn explore_projects<'q>(&self, query: ExploreQuery<'q>, cursor: impl Into<Cursor>) -> GeneralResult<Vec<PartialProject2>> {
+    pub async fn explore_projects(&self, query: &ExploreQuery, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project2>> {
         let response = self.get("explore/projects/").query(&query.as_query()).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn explore_studios<'q>(&self, query: ExploreQuery<'q>, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Studio2>> {
+    pub async fn explore_studios(&self, query: &ExploreQuery, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Studio2>> {
         let response = self.get("explore/studios/").query(&query.as_query()).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }

@@ -1,6 +1,6 @@
 use std::sync::Arc;
-use super::{UserWithId, User};
-use crate::{ProjectWithTitle, api, Api};
+use super::{UserWithId, User, ProjectWithTitle};
+use crate::{api, Api};
 
 #[derive(Debug)]
 pub struct UserFeatured {

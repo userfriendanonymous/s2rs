@@ -105,7 +105,55 @@ impl StudioMeta {
         data.into_iter().map(|data| Self::new(data, api.clone())).collect()
     }
 }
+
 // endregion: StudioMeta
+
+// region: Studio2
+#[derive(Debug)]
+#[deref(this)]
+pub struct Studio2 {
+    pub this: Arc<StudioWithTitle>,
+    pub host: u64,
+    pub description: String,
+    pub visibility: String,
+    pub public: bool,
+    pub open_to_all: bool,
+    pub comments_allowed: bool,
+    pub image: String,
+    pub history: api::StudioHistory,
+}
+
+impl Studio2 {
+    pub fn with_this(data: api::Studio2, this: Arc<StudioWithTitle>) -> Arc<Self> {
+        Arc::new(Self {
+            this,
+            comments_allowed: data.comments_allowed,
+            description: data.description,
+            history: data.history,
+            host: data.host,
+            image: data.image,
+            open_to_all: data.open_to_all,
+            public: data.public,
+            visibility: data.visibility,
+        })
+    }
+
+    pub fn with_this_this(data: api::Studio2, this: Arc<Studio>) -> Arc<Self> {
+        let title = data.title.clone();
+        Self::with_this(data, StudioWithTitle::with_this(title, this))
+    }
+
+    pub fn new(data: api::Studio2, api: Arc<Api>) -> Arc<Self> {
+        let title = data.title.clone();
+        let id = data.id;
+        Self::with_this(data, StudioWithTitle::new(title, id, api))
+    }
+
+    pub fn vec_new(data: Vec<api::Studio2>, api: Arc<Api>) -> Vec<Arc<Self>> {
+        data.into_iter().map(|data| Self::new(data, api.clone())).collect()
+    }
+}
+// endregion: Studio2
 
 // region: AddStudioProject
 #[derive(Debug)]

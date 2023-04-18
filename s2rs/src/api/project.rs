@@ -5,7 +5,7 @@ use crate::cursor::Cursor;
 
 // region: Project
 #[derive(Deserialize, Debug)]
-pub struct PartialProject2 {
+pub struct Project2 {
     pub id: u64,
     pub title: String,
     pub description: String,
@@ -23,7 +23,7 @@ pub struct PartialProject2 {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct PartialProject {
+pub struct Project3 {
     pub id: u64,
     pub title: String,
     pub description: String,
@@ -32,7 +32,7 @@ pub struct PartialProject {
     pub public: bool,
     pub comments_allowed: bool,
     pub is_published: bool,
-    pub author: PartialProjectAuthor,
+    pub author: Project3Author,
     pub image: String,
     pub images: ProjectImages,
     pub stats: ProjectStats,
@@ -74,7 +74,7 @@ pub struct ProjectAuthor {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct PartialProjectAuthor {
+pub struct Project3Author {
     pub id: u64,
     #[serde( rename = "scratchteam" )]
     pub scratch_team: bool,
@@ -134,22 +134,22 @@ impl Api {
         Ok(response.json().await?)
     }
 
-    pub async fn get_user_projects(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<PartialProject>> {
+    pub async fn get_user_projects(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project3>> {
         let response = self.get(&format!("users/{name}/projects/")).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_user_favorites(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<PartialProject>> {
+    pub async fn get_user_favorites(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project3>> {
         let response = self.get(&format!("users/{name}/favorites/")).cursor_2(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_user_views(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<PartialProject2>> {
+    pub async fn get_user_views(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project2>> {
         let response = self.get(&format!("users/{name}/projects/recentlyviewed/")).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_project_remixes(&self, id: u64, cursor: impl Into<Cursor>) -> GeneralResult<Vec<PartialProject>> {
+    pub async fn get_project_remixes(&self, id: u64, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project3>> {
         let response = self.get(&format!("projects/{id}/remixes/")).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }

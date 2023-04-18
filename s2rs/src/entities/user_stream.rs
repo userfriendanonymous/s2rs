@@ -1,17 +1,17 @@
 use std::sync::Arc;
 use crate::api::{self, Api};
-use super::{User, stream::{GeneralStreamResult, GeneralStreamGen}, PartialProject, StudioMeta, UserMeta, UserCommentMeta, PartialProject2, FollowingAction};
+use super::{User, stream::{GeneralStreamResult, GeneralStreamGen}, Project3, StudioMeta, UserMeta, UserCommentMeta, Project2, FollowingAction};
 use async_trait::async_trait;
 use crate::cursor::Cursor;
 
 // region: UserProjects
 #[derive(Clone)] pub struct UserProjects;
 #[async_trait] impl GeneralStreamGen for UserProjects {
-    type Data = PartialProject;
+    type Data = Project3;
     type Error = api::GeneralError;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(PartialProject::vec_new(api.get_user_projects(&this.name, cursor).await?, api.clone()))
+        Ok(Project3::vec_new(api.get_user_projects(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserProjects
@@ -19,11 +19,11 @@ use crate::cursor::Cursor;
 // region: UserFavorites
 #[derive(Clone)] pub struct UserFavorites;
 #[async_trait] impl GeneralStreamGen for UserFavorites {
-    type Data = PartialProject;
+    type Data = Project3;
     type Error = api::GeneralError;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(PartialProject::vec_new(api.get_user_favorites(&this.name, cursor).await?, api.clone()))
+        Ok(Project3::vec_new(api.get_user_favorites(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserFavorites
@@ -67,11 +67,11 @@ use crate::cursor::Cursor;
 // region: UserProjectsLovedByFollowing
 #[derive(Clone)] pub struct UserProjectsLovedByFollowing;
 #[async_trait] impl GeneralStreamGen for UserProjectsLovedByFollowing {
-    type Data = PartialProject2;
+    type Data = Project2;
     type Error = api::GeneralError;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(PartialProject2::vec_new(api.get_projects_loved_by_following(&this.name, cursor).await?, api.clone()))
+        Ok(Project2::vec_new(api.get_projects_loved_by_following(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserProjectsLovedByFollowing
@@ -79,11 +79,11 @@ use crate::cursor::Cursor;
 // region: UserViews
 #[derive(Clone)] pub struct UserViews;
 #[async_trait] impl GeneralStreamGen for UserViews {
-    type Data = PartialProject2;
+    type Data = Project2;
     type Error = api::GeneralError;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(PartialProject2::vec_new(api.get_projects_loved_by_following(&this.name, cursor).await?, api.clone()))
+        Ok(Project2::vec_new(api.get_projects_loved_by_following(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserViews
@@ -91,11 +91,11 @@ use crate::cursor::Cursor;
 // region: UserProjectsSharedByFollowing
 #[derive(Clone)] pub struct UserProjectsSharedByFollowing;
 #[async_trait] impl GeneralStreamGen for UserProjectsSharedByFollowing {
-    type Data = PartialProject2;
+    type Data = Project2;
     type Error = api::GeneralError;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(PartialProject2::vec_new(api.get_projects_shared_by_following(&this.name, cursor).await?, api.clone()))
+        Ok(Project2::vec_new(api.get_projects_shared_by_following(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserProjectsSharedByFollowing
