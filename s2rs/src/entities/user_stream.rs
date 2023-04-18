@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use crate::api::{self, Api};
-use super::{User, stream::{GeneralStreamResult, GeneralStreamGen}, Project3, StudioMeta, UserMeta, UserCommentMeta, Project2, FollowingAction};
+use super::{User, stream::{GeneralStreamResult, GeneralStreamGen}, Project3, StudioMeta, UserMeta, Project2, FollowingAction};
+#[cfg(feature = "html")] use super::UserCommentMeta;
 use async_trait::async_trait;
 use crate::cursor::Cursor;
 
@@ -125,7 +126,9 @@ use crate::cursor::Cursor;
 // endregion: UserFollowingActivity
 
 // region: UserComments
+#[cfg(feature = "html")]
 #[derive(Clone)] pub struct UserComments;
+#[cfg(feature = "html")]
 #[async_trait] impl GeneralStreamGen for UserComments {
     type Data = UserCommentMeta;
     type Error = api::GeneralError;

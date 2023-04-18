@@ -47,4 +47,8 @@ impl Me {
     pub async fn news(&self) -> GeneralResult<Vec<api::News>> {
         self.api.get_news().await
     }
+
+    pub async fn global_projects_count(&self) -> GeneralResult<u64> {
+        self.api.get_projects_count().await
+    }
 }

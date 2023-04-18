@@ -2,7 +2,7 @@
 use std::sync::Arc;
 use derivative::Derivative;
 use s2rs_derive::deref;
-use crate::api::{Api, self};
+use crate::api::{Api, self, GeneralResult, UserNameCheck};
 use super::UserFeatured;
 #[cfg(feature = "stream")] use super::{stream::GeneralStream, user_stream::*};
 #[cfg(feature = "stream")] use crate::cursor::Cursor;
@@ -182,6 +182,7 @@ impl User {
     }
 
     #[cfg(feature = "stream")]
+    #[cfg(feature = "html")]
     pub fn comments(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<UserComments> {
         GeneralStream::with_this(UserComments, cursor.into(), self.clone(), self.api.clone())
     }
@@ -199,6 +200,10 @@ impl User {
     pub async fn send_comment(&self, content: impl Into<String>) -> Result<(), api::GeneralError> {
         self.api.send_user_comment(&self.name, content.into(), None, None).await?;
         Ok(())
+    }
+
+    pub async fn check(&self) -> GeneralResult<UserNameCheck> {
+        self.api.check_user_name(&self.name).await
     }
 }
 // endregion: User

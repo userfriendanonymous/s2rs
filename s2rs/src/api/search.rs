@@ -1,9 +1,11 @@
 use crate::{Api, cursor::Cursor};
 use super::{ExploreMode, Project2, GeneralResult, utils::{RequestBuilderUtils, ResponseUtils}, Studio2};
 
+pub type SearchMode = ExploreMode;
+
 #[derive(Clone, Debug)]
 pub struct SearchQuery {
-    pub mode: Option<ExploreMode>,
+    pub mode: Option<SearchMode>,
     pub query: Option<String>,
 }
 

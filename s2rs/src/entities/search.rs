@@ -32,11 +32,11 @@ use std::sync::Arc;
 // endregion: streams
 
 impl Me {
-    pub async fn search_projects(self: &Arc<Self>, query: SearchQuery, cursor: impl Into<Cursor>) -> GeneralStream<SearchProjects> {
+    pub fn search_projects(self: &Arc<Self>, query: SearchQuery, cursor: impl Into<Cursor>) -> GeneralStream<SearchProjects> {
         GeneralStream::with_this(SearchProjects { query }, cursor.into(), self.clone(), self.api.clone())
     }
 
-    pub async fn search_studios(self: &Arc<Self>, query: SearchQuery, cursor: impl Into<Cursor>) -> GeneralStream<SearchStudios> {
+    pub fn search_studios(self: &Arc<Self>, query: SearchQuery, cursor: impl Into<Cursor>) -> GeneralStream<SearchStudios> {
         GeneralStream::with_this(SearchStudios { query }, cursor.into(), self.clone(), self.api.clone())
     }
 }

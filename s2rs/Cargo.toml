@@ -1,13 +1,13 @@
 [package]
 name = "s2rs"
-version = "0.1.4"
+version = "0.1.5"
 license = "MIT"
 edition = "2021"
 description = "An intuitive Rust -> Scratch API library"
 repository = "https://github.com/userfriendanonymous/s2rs/"
 
 [features]
-default = ["all"] # to be removed?
+# default = ["all"] # to be removed?
 time = ["dep:chrono"]
 rss = ["time", "dep:feed-rs"]
 html = ["dep:html_parser"]

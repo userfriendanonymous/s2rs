@@ -2,9 +2,11 @@
 use std::sync::Arc;
 use crate::{Api, api::{GeneralResult, self}};
 #[cfg(feature = "time")] use chrono::{DateTime, Utc};
+use derivative::Derivative;
 use super::User;
 
 // region: ForumTopicRss
+#[derive(Debug)]
 #[cfg(feature = "time")]
 pub struct ForumTopicRss {
     pub this: Arc<ForumTopic>,
@@ -27,6 +29,7 @@ impl ForumTopicRss {
 // endregion: ForumTopicRss
 
 // region: ForumTopicRssPost
+#[derive(Debug)]
 #[cfg(feature = "time")]
 pub struct ForumTopicRssPost {
     pub this: Arc<ForumPost>,
@@ -53,9 +56,11 @@ impl ForumTopicRssPost {
 // endregion: ForumTopicRssPost
 
 // region: ForumTopic
-#[derive(Debug)]
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub struct ForumTopic {
     pub id: u64,
+    #[derivative(Debug = "ignore")]
     api: Arc<Api>
 }
 
@@ -74,9 +79,11 @@ impl ForumTopic {
 }
 // endregion: ForumTopic
 
-#[derive(Debug)]
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub struct ForumPost {
     pub id: u64,
+    #[derivative(Debug = "ignore")]
     api: Arc<Api>
 }
 

@@ -17,22 +17,22 @@ pub struct Session {
 }
 
 impl Session {
-    pub fn new(name: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>) -> Arc<Self> {
         let name: String = name.into();
         let api = Arc::new(Api::new(name.clone()));
-        Self {
+        Arc::new(Self {
             me: Me::with_this(User::new(name, api.clone()), api.clone()),
             api,
-        }
+        })
     }
 
-    pub fn with_auth(name: impl Into<String>, tokens: &Tokens) -> Result<Self, api::Error> {
+    pub fn with_auth(name: impl Into<String>, tokens: &Tokens) -> Result<Arc<Self>, api::Error> {
         let name: String = name.into();
         let api = Arc::new(Api::with_auth(name.clone(), tokens)?);
-        Ok(Self {
+        Ok(Arc::new(Self {
             me: Me::with_this(User::new(name, api.clone()), api.clone()),
             api
-        })
+        }))
     }
 
     pub fn user(&self, name: impl Into<String>) -> Arc<User> {

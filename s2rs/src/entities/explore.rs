@@ -31,11 +31,11 @@ use super::{stream::{GeneralStreamGen, GeneralStreamResult, GeneralStream}, Proj
 // endregion: streams
 
 impl Me {
-    pub async fn explore_projects(self: &Arc<Self>, query: ExploreQuery, cursor: impl Into<Cursor>) -> GeneralStream<ExploreProjects> {
+    pub fn explore_projects(self: &Arc<Self>, query: ExploreQuery, cursor: impl Into<Cursor>) -> GeneralStream<ExploreProjects> {
         GeneralStream::with_this(ExploreProjects { query }, cursor.into(), self.clone(), self.api.clone())
     }
 
-    pub async fn explore_studios(self: &Arc<Self>, query: ExploreQuery, cursor: impl Into<Cursor>) -> GeneralStream<ExploreStudios> {
+    pub fn explore_studios(self: &Arc<Self>, query: ExploreQuery, cursor: impl Into<Cursor>) -> GeneralStream<ExploreStudios> {
         GeneralStream::with_this(ExploreStudios { query }, cursor.into(), self.clone(), self.api.clone())
     }
 }

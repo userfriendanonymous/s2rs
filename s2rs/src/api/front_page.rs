@@ -4,12 +4,19 @@ use super::{GeneralResult, utils::{RequestBuilderUtils, ResponseUtils}, general_
 
 #[derive(Debug, Deserialize)]
 pub struct FrontPage {
+    #[serde( rename = "community_newest_projects" )]
     pub new_projects: Vec<FrontPageProject>,
+    #[serde( rename = "community_featured_studios" )]
     pub featured_studios: Vec<FrontPageFeaturedStudio>,
+    #[serde( rename = "community_featured_projects" )]
     pub featured_projects: Vec<FrontPageProject>,
+    #[serde( rename = "curator_top_projects" )]
     pub curated_projects: Vec<FrontPageCuratedProject>,
+    #[serde( rename = "community_most_remixed_projects" )]
     pub most_remixed_projects: Vec<FrontPageMostRemixedProject>,
+    #[serde( rename = "community_most_loved_projects" )]
     pub most_loved_projects: Vec<FrontPageProject>,
+    #[serde( rename = "scratch_design_studio" )]
     pub design_studio_projects: Vec<FrontPageDesignStudioProject>,
 }
 

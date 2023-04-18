@@ -15,9 +15,13 @@ pub struct ForumTopicRss {
 impl ForumTopicRss {
     pub fn try_from_rss(data: feed_rs::model::Feed) -> Result<Self, ParsingCustomError> {
         let mut posts = Vec::new();
+        dbg!();
         for entry in data.entries {
             posts.push(ForumTopicRssPost::try_from_rss(entry)?);
         }
+        dbg!();
+        data.id.split('/').rev().nth(1).ok_or(())?.parse::<u64>().ok().ok_or(())?;
+        dbg!();
         Ok(Self {
             id: data.id.split('/').rev().nth(1).ok_or(())?.parse().ok().ok_or(())?,
             title: data.title.ok_or(())?.content,
@@ -38,12 +42,14 @@ pub struct ForumTopicRssPost {
 #[cfg(feature = "rss")]
 impl ForumTopicRssPost {
     pub fn try_from_rss(mut data: feed_rs::model::Entry) -> Result<Self, ParsingCustomError> {
+        dbg!();
         if data.authors.get(0).is_none() {
             Err(())?
         }
+        dbg!(&data.authors);
         Ok(Self {
             author_name: data.authors.swap_remove(0).name,
-            content: data.content.ok_or(())?.body.ok_or(())?,
+            content: data.summary.ok_or(())?.content,
             created_at: data.published.ok_or(())?,
             id: data.id.parse().ok().ok_or(())?
         })
