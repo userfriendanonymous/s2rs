@@ -6,10 +6,10 @@ use super::{GeneralResult, utils::{RequestBuilderUtils, ResponseUtils}, general_
 pub struct FrontPage {
     pub new_projects: Vec<FrontPageProject>,
     pub featured_studios: Vec<FrontPageFeaturedStudio>,
-    pub featured_projects: Vec<FrontPageFeaturedProject>,
+    pub featured_projects: Vec<FrontPageProject>,
     pub curated_projects: Vec<FrontPageCuratedProject>,
     pub most_remixed_projects: Vec<FrontPageMostRemixedProject>,
-    pub most_loved_projects: Vec<FrontPageMostLovedProject>,
+    pub most_loved_projects: Vec<FrontPageProject>,
     pub design_studio_projects: Vec<FrontPageDesignStudioProject>,
 }
 
@@ -73,7 +73,8 @@ pub struct FrontPageCuratedProject {
     pub thumbnail_url: String,
     #[serde( rename = "creator" )]
     pub author_name: String,
-    pub curator_name: String,
+    #[serde( rename = "curator_name" )]
+    pub curated_by_name: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -81,26 +82,6 @@ pub struct FrontPageFeaturedStudio {
     pub id: u64,
     pub title: String,
     pub thumbnail_url: String,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct FrontPageMostLovedProject {
-    pub id: u64,
-    pub title: String,
-    pub thumbnail_url: String,
-    #[serde( rename = "creator" )]
-    pub author_name: String,
-    pub love_count: u32,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct FrontPageFeaturedProject {
-    pub id: u64,
-    pub title: String,
-    pub thumbnail_url: String,
-    #[serde( rename = "creator" )]
-    pub author_name: String,
-    pub love_count: u32,
 }
 // endregion: structures
 

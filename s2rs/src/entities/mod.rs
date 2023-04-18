@@ -14,6 +14,7 @@ pub use cloud_action::*;
 pub use cloud::*;
 pub use user_featured::*;
 pub use me::*;
+pub use front_page::*;
 
 pub mod user;
 pub mod project;
@@ -29,6 +30,7 @@ pub mod cloud;
 pub mod cloud_action;
 pub mod user_featured;
 pub mod me;
+pub mod front_page;
 
 #[cfg(feature = "stream")] mod stream;
 #[cfg(feature = "stream")] mod user_stream;

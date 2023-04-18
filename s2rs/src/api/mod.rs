@@ -86,7 +86,7 @@ struct Urls {
     pub cloud: Url,
 }
 
-type GeneralResult<T> = Result<T, GeneralError>;
+pub type GeneralResult<T> = Result<T, GeneralError>;
 
 #[derive(Forwarder, Debug)]
 pub enum NetworkError {
