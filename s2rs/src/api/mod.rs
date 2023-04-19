@@ -50,6 +50,7 @@ pub mod domains {
     pub const PROJECTS: &str = "projects.scratch.mit.edu/";
     pub const BASE: &str = "scratch.mit.edu/";
     pub const CLOUD: &str = "clouddata.scratch.mit.edu/";
+    pub const UPLOADS: &str = "uploads.scratch.mit.edu/";
 }
 
 pub struct Tokens {
@@ -263,4 +264,13 @@ impl Api {
         self.request_cloud(Method::GET, path)
     }
     // endregion: cloud
+
+    // region: uploads
+    fn request_uploads(&self, method: Method, path: &str) -> RequestBuilder {
+        self.https_request(method, &format!["{}{path}", domains::UPLOADS])
+    }
+    fn get_uploads(&self, path: &str) -> RequestBuilder {
+        self.request_uploads(Method::GET, path)
+    }
+    // endregion: uploads
 }

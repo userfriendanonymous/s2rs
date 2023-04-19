@@ -421,5 +421,10 @@ impl Project {
     pub async fn report(&self) -> Result<(), api::Error> {
         self.api.report_user_comment(self.id).await
     }
+
+    #[cfg(feature = "bytes")]
+    pub async fn thumbnail(&self, width: u16, height: u16) -> api::Result<bytes::Bytes> {
+        self.api.get_project_thumbnail(self.id, width, height).await
+    }
 }
 // endregion: Project

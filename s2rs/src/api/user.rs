@@ -193,4 +193,15 @@ impl Api {
         let response = self.get(&format!["accounts/checkusername/{name}/"]).send_success().await?;
         Ok(response.json().await?)
     }
+
+    #[cfg(feature = "bytes")]
+    pub async fn get_user_icon(&self, id: u64, width: u16, height: u16) -> super::Result<bytes::Bytes> {
+        let response = self.get_uploads(&format!["get_image/user/{id}_{width}x{height}.png"]).send().await?;
+        let status = response.status();
+        if status.is_success() || status.as_u16() == 302 {
+            Ok(response.bytes().await?)
+        } else {
+            Err(super::NetworkError::Status(status))?
+        }
+    }
 }

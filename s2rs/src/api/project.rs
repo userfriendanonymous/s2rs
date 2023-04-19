@@ -1,4 +1,4 @@
-use super::{Api, user::{UserProfileImages, UserHistory}, utils::{ResponseUtils, RequestBuilderUtils}};
+use super::{Api, user::{UserProfileImages, UserHistory}, utils::{ResponseUtils, RequestBuilderUtils}, NetworkError};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use crate::cursor::Cursor;
@@ -245,4 +245,19 @@ impl Api {
         .project_send_success(id).await?;
         Ok(())
     }
+
+    #[cfg(feature = "bytes")]
+    pub async fn get_project_thumbnail(&self, id: u64, width: u16, height: u16) -> super::Result<bytes::Bytes> {
+        let response = self.get_uploads(&format!["get_image/project/{id}_{width}x{height}.png"]).send().await?;
+        let status = response.status();
+        if status.is_success() || status.as_u16() == 302 {
+            Ok(response.bytes().await?)
+        } else {
+            Err(NetworkError::Status(status))?
+        }
+    }
+
+    // pub async fn set_project_thumbnail(&self, file: &tokio::fs::File) -> super::Result<()> {
+    //     let _ = self.
+    // }
 }
