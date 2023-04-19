@@ -3,7 +3,7 @@ use super::Api;
 use serde_json::json;
 #[cfg(feature = "html")] use crate::cursor::Cursor;
 #[cfg(feature = "html")] use super::ParsingCustomError;
-use super::{GeneralResult, utils::RequestBuilderUtils};
+use super::utils::RequestBuilderUtils;
 // const NUMBERS: &str = "1234567890";
 
 #[derive(Debug)]
@@ -154,7 +154,7 @@ impl UserComment {
 
 impl Api {
     #[cfg(feature = "html")]
-    pub async fn get_user_comments(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<UserComment>> {
+    pub async fn get_user_comments(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<UserComment>> {
         let response = self.get_site_api(&format!["comments/user/{name}/"]).cursor(cursor).send_success().await?;
         let data = response.text().await?;
 
@@ -175,7 +175,7 @@ impl Api {
 }
 
 impl Api {
-    pub async fn report_user_comment(&self, id: u64) -> GeneralResult<()> {
+    pub async fn report_user_comment(&self, id: u64) -> super::Result<()> {
         self.post_site_api(&format!["comments/user/{}/rep/", &self.name]).json(json!({
             "id": id.to_string()
         }))?.send_success().await?;

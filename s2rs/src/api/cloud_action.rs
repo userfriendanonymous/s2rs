@@ -1,4 +1,4 @@
-use super::{Api, utils::{RequestBuilderUtils, ResponseUtils}, GeneralResult, ParsingCustomError};
+use super::{Api, utils::{RequestBuilderUtils, ResponseUtils}, ParsingCustomError};
 use super::general_parser::{GeneralParser, GeneralParsable};
 use crate::cursor::Cursor;
 
@@ -50,7 +50,7 @@ impl GeneralParsable for CloudActionEvent {
 }
 
 impl Api {
-    pub async fn get_project_cloud_activity(&self, id: u64, cursor: impl Into<Cursor>) -> GeneralResult<Vec<CloudAction>> {
+    pub async fn get_project_cloud_activity(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<CloudAction>> {
         let response = self.get_cloud("logs").cursor(cursor)
         .query(&[("projectid", id)]).send_success().await?;
         response.general_parser_vec().await

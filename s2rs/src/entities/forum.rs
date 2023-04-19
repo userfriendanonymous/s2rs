@@ -1,6 +1,6 @@
 
 use std::sync::Arc;
-use crate::{Api, api::{GeneralResult, self}};
+use crate::{Api, api};
 #[cfg(feature = "time")] use chrono::{DateTime, Utc};
 use derivative::Derivative;
 use super::User;
@@ -73,7 +73,7 @@ impl ForumTopic {
     }
 
     #[cfg(feature = "rss")]
-    pub async fn rss(self: &Arc<Self>) -> GeneralResult<ForumTopicRss> {
+    pub async fn rss(self: &Arc<Self>) -> api::Result<ForumTopicRss> {
         Ok(ForumTopicRss::with_this(self.api.get_forum_topic_rss(self.id).await?, self.clone(), self.api.clone()))
     }
 }
@@ -95,7 +95,7 @@ impl ForumPost {
         })
     }
 
-    pub async fn content(&self) -> GeneralResult<String> {
+    pub async fn content(&self) -> api::Result<String> {
         self.api.get_forum_post_content(self.id).await
     }
 }

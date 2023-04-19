@@ -1,6 +1,15 @@
 use std::sync::Arc;
 use crate::{api::{Api, Tokens, self}, entities::{User, Project, Studio, Me, ForumTopic, ForumPost}};
 
+pub struct ExtensionPipe {
+    pub me: Arc<Me>,
+    pub api: Arc<Api>,
+}
+
+pub trait Extension {
+    fn extended(pipe: ExtensionPipe) -> Arc<Self>;
+}
+
 /// Session abstracts away plain and flat api requests and makes library usage very intuitive.
 /// # Example
 /// ```
@@ -17,18 +26,25 @@ pub struct Session {
 }
 
 impl Session {
+    pub fn extend<T: Extension>(&self) -> Arc<T> {
+        T::extended(ExtensionPipe {
+            api: self.api.clone(),
+            me: self.me.clone()
+        })
+    }
+
     pub fn new(name: impl Into<String>) -> Arc<Self> {
         let name: String = name.into();
-        let api = Arc::new(Api::new(name.clone()));
+        let api = Api::new(name.clone());
         Arc::new(Self {
             me: Me::with_this(User::new(name, api.clone()), api.clone()),
             api,
         })
     }
 
-    pub fn with_auth(name: impl Into<String>, tokens: &Tokens) -> Result<Arc<Self>, api::Error> {
+    pub fn with_auth(name: impl Into<String>, tokens: &Tokens) -> Result<Arc<Self>, api::WithAuthError> {
         let name: String = name.into();
-        let api = Arc::new(Api::with_auth(name.clone(), tokens)?);
+        let api = Api::with_auth(name.clone(), tokens)?;
         Ok(Arc::new(Self {
             me: Me::with_this(User::new(name, api.clone()), api.clone()),
             api

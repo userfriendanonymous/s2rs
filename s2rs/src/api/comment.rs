@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use super::{Api, utils::{ResponseUtils, RequestBuilderUtils}, GeneralResult};
+use super::{Api, utils::{ResponseUtils, RequestBuilderUtils}};
 use crate::cursor::Cursor;
 
 #[derive(Deserialize, Debug)]
@@ -28,22 +28,22 @@ pub struct CommentAuthor {
 }
 
 impl Api {
-    pub async fn get_project_comments(&self, id: u64, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Comment>> {
+    pub async fn get_project_comments(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
         let response = self.get(&format!("comments/project/{id}")).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_project_comment_replies(&self, id: u64, comment_id: u64, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Comment>> {
+    pub async fn get_project_comment_replies(&self, id: u64, comment_id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
         let response = self.get(&format!("comments/project/{id}/{comment_id}")).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_studio_comments(&self, id: u64, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Comment>> {
+    pub async fn get_studio_comments(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
         let response = self.get(&format!("studios/{id}/comments/")).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_studio_comment_replies(&self, id: u64, comment_id: u64, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Comment>> {
+    pub async fn get_studio_comment_replies(&self, id: u64, comment_id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
         let response = self.get(&format!("studios/{id}/comments/{comment_id}/")).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }

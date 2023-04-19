@@ -358,7 +358,7 @@ impl Project {
 }
 
 impl Project {
-    pub async fn meta(self: &Arc<Self>) -> Result<Arc<ProjectMeta>, api::GeneralError> {
+    pub async fn meta(self: &Arc<Self>) -> Result<Arc<ProjectMeta>, api::Error> {
         Ok(ProjectMeta::with_this_this_this(self.api.get_project_meta(self.id).await?, self.clone(), self.api.clone()))
     }
 
@@ -382,43 +382,43 @@ impl Project {
         Ok(Cloud::new(5, self.api.get_project_cloud(id).await?))
     }
 
-    pub async fn love(&self) -> Result<(), api::GeneralError> {
+    pub async fn love(&self) -> Result<(), api::Error> {
         self.api.love_project(self.id).await
     }
 
-    pub async fn unlove(&self) -> Result<(), api::GeneralError> {
+    pub async fn unlove(&self) -> Result<(), api::Error> {
         self.api.unlove_project(self.id).await
     }
 
-    pub async fn favorite(&self) -> Result<(), api::GeneralError> {
+    pub async fn favorite(&self) -> Result<(), api::Error> {
         self.api.favorite_project(self.id).await
     }
 
-    pub async fn unfavorite(&self) -> Result<(), api::GeneralError> {
+    pub async fn unfavorite(&self) -> Result<(), api::Error> {
         self.api.unfavorite_project(self.id).await
     }
 
-    pub async fn unshare(&self) -> Result<(), api::GeneralError> {
+    pub async fn unshare(&self) -> Result<(), api::Error> {
         self.api.unshare_project(self.id).await
     }
 
-    pub async fn send_comment(&self, content: &str) -> Result<(), api::GeneralError> {
+    pub async fn send_comment(&self, content: &str) -> Result<(), api::Error> {
         self.api.send_project_comment(self.id, content, None, None).await
     }
 
-    pub async fn delete_comment(&self, id: u64) -> Result<(), api::GeneralError> {
+    pub async fn delete_comment(&self, id: u64) -> Result<(), api::Error> {
         self.api.delete_project_comment(self.id, id).await
     }
 
-    pub async fn view(&self) -> Result<(), api::GeneralError> {
+    pub async fn view(&self) -> Result<(), api::Error> {
         self.api.view_project(self.id).await
     }
 
-    pub async fn set_commenting(&self, allowed: bool) -> Result<(), api::GeneralError> {
+    pub async fn set_commenting(&self, allowed: bool) -> Result<(), api::Error> {
         self.api.set_project_commenting(self.id, allowed).await
     }
 
-    pub async fn report(&self) -> Result<(), api::GeneralError> {
+    pub async fn report(&self) -> Result<(), api::Error> {
         self.api.report_user_comment(self.id).await
     }
 }

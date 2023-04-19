@@ -1,4 +1,4 @@
-use super::{Api, user::{UserProfileImages, UserHistory}, utils::{ResponseUtils, RequestBuilderUtils}, GeneralResult};
+use super::{Api, user::{UserProfileImages, UserHistory}, utils::{ResponseUtils, RequestBuilderUtils}};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use crate::cursor::Cursor;
@@ -129,32 +129,32 @@ pub struct ProjectRemix {
 // endregion: Project extra
 
 impl Api {
-    pub async fn get_project_meta(&self, id: u64) -> GeneralResult<Project> {
+    pub async fn get_project_meta(&self, id: u64) -> super::Result<Project> {
         let response = self.get(&format!("projects/{id}/")).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_user_projects(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project3>> {
+    pub async fn get_user_projects(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project3>> {
         let response = self.get(&format!("users/{name}/projects/")).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_user_favorites(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project3>> {
+    pub async fn get_user_favorites(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project3>> {
         let response = self.get(&format!("users/{name}/favorites/")).cursor_2(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_user_views(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project2>> {
+    pub async fn get_user_views(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
         let response = self.get(&format!("users/{name}/projects/recentlyviewed/")).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_project_remixes(&self, id: u64, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project3>> {
+    pub async fn get_project_remixes(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Project3>> {
         let response = self.get(&format!("projects/{id}/remixes/")).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn send_project_comment(&self, id: u64, content: &str, parent_id: Option<u64>, to_id: Option<u64>) -> GeneralResult<()> {
+    pub async fn send_project_comment(&self, id: u64, content: &str, parent_id: Option<u64>, to_id: Option<u64>) -> super::Result<()> {
         let _ = self.post_proxy(&format!["comments/project/{id}/"])
         .json(json!({
             "commentee_id": to_id,
@@ -165,7 +165,7 @@ impl Api {
         Ok(())
     }
 
-    pub async fn set_project_commenting(&self, id: u64, allowed: bool) -> GeneralResult<()> {
+    pub async fn set_project_commenting(&self, id: u64, allowed: bool) -> super::Result<()> {
         let _ = self.put(&format!["projects/{id}/"])
         .json(json!({
             "comments_allowed": allowed
@@ -174,52 +174,52 @@ impl Api {
         Ok(())
     }
 
-    pub async fn love_project(&self, id: u64) -> GeneralResult<()> {
+    pub async fn love_project(&self, id: u64) -> super::Result<()> {
         let response = self.post_proxy(&format!("projects/{id}/loves/user/{}", self.name())).project_send_success(id).await?;
         let data: Value = response.json().await?;
         dbg!(data);
         Ok(())
     }
 
-    pub async fn unlove_project(&self, id: u64) -> GeneralResult<()> {
+    pub async fn unlove_project(&self, id: u64) -> super::Result<()> {
         let response = self.delete_proxy(&format!("projects/{id}/loves/user/{}", self.name())).project_send_success(id).await?;
         let data: Value = response.json().await?;
         dbg!(data);
         Ok(())
     }
 
-    pub async fn favorite_project(&self, id: u64) -> GeneralResult<()> {
+    pub async fn favorite_project(&self, id: u64) -> super::Result<()> {
         let response = self.post_proxy(&format!("projects/{id}/favorites/user/{}/", self.name())).project_send_success(id).await?;
         let data: Value = response.json().await?;
         dbg!(data);
         Ok(())
     }
 
-    pub async fn unfavorite_project(&self, id: u64) -> GeneralResult<()> {
+    pub async fn unfavorite_project(&self, id: u64) -> super::Result<()> {
         let response = self.delete_proxy(&format!("projects/{id}/favorites/user/{}/", self.name())).project_send_success(id).await?;
         let data: Value = response.json().await?;
         dbg!(data);
         Ok(())
     }
 
-    pub async fn unshare_project(&self, id: u64) -> GeneralResult<()> {
+    pub async fn unshare_project(&self, id: u64) -> super::Result<()> {
         let response = self.put_proxy(&format!("projects/{id}/unshare/")).project_send_success(id).await?;
         let data: Value = response.json().await?;
         dbg!(data);
         Ok(())
     }
 
-    pub async fn view_project(&self, id: u64) -> GeneralResult<()> {
+    pub async fn view_project(&self, id: u64) -> super::Result<()> {
         let _ = self.post(&format!("users/{}/projects/{id}/views", self.name())).project_send_success(id).await?;
         Ok(())
     }
 
-    pub async fn delete_project_comment(&self, id: u64, comment_id: u64) -> GeneralResult<()> {
+    pub async fn delete_project_comment(&self, id: u64, comment_id: u64) -> super::Result<()> {
         let _ = self.delete_proxy(&format!("comments/project/{id}/comment/{comment_id}/")).project_send_success(id).await?;
         Ok(())
     }
 
-    pub async fn set_project_title(&self, id: u64, content: &str) -> GeneralResult<()> {
+    pub async fn set_project_title(&self, id: u64, content: &str) -> super::Result<()> {
         let _ = self.put(&format!("projects/{id}/"))
         .json(json!({
             "title": content
@@ -228,7 +228,7 @@ impl Api {
         Ok(())
     }
 
-    pub async fn set_project_description(&self, id: u64, content: &str) -> GeneralResult<()> {
+    pub async fn set_project_description(&self, id: u64, content: &str) -> super::Result<()> {
         let _ = self.put(&format!("projects/{id}/"))
         .json(json!({
             "description": content
@@ -237,7 +237,7 @@ impl Api {
         Ok(())
     }
 
-    pub async fn set_project_instructions(&self, id: u64, content: &str) -> GeneralResult<()> {
+    pub async fn set_project_instructions(&self, id: u64, content: &str) -> super::Result<()> {
         let _ = self.put(&format!("projects/{id}/"))
         .json(json!({
             "instructions": content

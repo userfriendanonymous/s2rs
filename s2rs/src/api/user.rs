@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use crate::cursor::Cursor;
-use super::{Api, utils::{ResponseUtils, RequestBuilderUtils}, ParsingCustomError, GeneralResult, Project2};
+use super::{Api, utils::{ResponseUtils, RequestBuilderUtils}, ParsingCustomError, Project2};
 
 #[derive(Deserialize, Debug)]
 pub struct User {
@@ -109,12 +109,12 @@ impl Serialize for FeaturedLabel {
 // endregion: UserInfo
 
 impl Api {
-    pub async fn get_user_meta(&self, name: &str) -> GeneralResult<User> {
+    pub async fn get_user_meta(&self, name: &str) -> super::Result<User> {
         let response = self.get(&format!["users/{name}"]).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_user_messages_count(&self, name: &str) -> GeneralResult<u64> {
+    pub async fn get_user_messages_count(&self, name: &str) -> super::Result<u64> {
         let response = self.get(&format!["users/{name}/messages/count"]).send_success().await?;
 
         let data: Value = response.json().await?;
@@ -122,51 +122,51 @@ impl Api {
         Ok(count)
     }
 
-    pub async fn get_user_followers(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<User>> {
+    pub async fn get_user_followers(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
         let response = self.get(&format!["users/{name}/followers/"]).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_user_following(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<User>> {
+    pub async fn get_user_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
         let response = self.get(&format!["users/{name}/following"]).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_projects_loved_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project2>> {
+    pub async fn get_projects_loved_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
         let response = self.get(&format!["users/{name}/following/users/loves/"]).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_projects_shared_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project2>> {
+    pub async fn get_projects_shared_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
         let response = self.get(&format!["users/{name}/following/users/projects/"]).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_studio_managers(&self, id: u64, cursor: impl Into<Cursor>) -> GeneralResult<Vec<User>> {
+    pub async fn get_studio_managers(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
         let response = self.get(&format!["studios/{id}/managers"]).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_studio_curators(&self, id: u64, cursor: impl Into<Cursor>) -> GeneralResult<Vec<User>> {
+    pub async fn get_studio_curators(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
         let response = self.get(&format!["studios/{id}/curators/"]).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn follow_user(&self, name: &str) -> GeneralResult<Value> {
+    pub async fn follow_user(&self, name: &str) -> super::Result<Value> {
         let response = self.put_site_api(&format!["users/followers/{name}/add/"])
         .query(&[("usernames", self.name())])
         .send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn unfollow_user(&self, name: &str) -> GeneralResult<Value> {
+    pub async fn unfollow_user(&self, name: &str) -> super::Result<Value> {
         let response = self.put_site_api(&format!["users/followers/{name}/remove/"])
         .query(&[("usernames", self.name())])
         .send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn send_user_comment(&self, name: &str, content: String, parent_id: Option<u64>, to_id: Option<u64>,) -> GeneralResult<()> {
+    pub async fn send_user_comment(&self, name: &str, content: String, parent_id: Option<u64>, to_id: Option<u64>,) -> super::Result<()> {
         let _ = self.post_site_api(&format!["comments/user/{name}/add/"])
         .json(json!({
             "commentee_id": to_id,
@@ -177,19 +177,19 @@ impl Api {
         Ok(())
     }
 
-    pub async fn toggle_user_commenting(&self, name: &str) -> GeneralResult<()> {
+    pub async fn toggle_user_commenting(&self, name: &str) -> super::Result<()> {
         let _ = self.post_site_api(&format!["comments/user/{name}/toggle-comments/"]).send_success().await?;
         Ok(())
     }
 
-    pub async fn set_user_info(&self, info: &UserInfo) -> GeneralResult<()> {
+    pub async fn set_user_info(&self, info: &UserInfo) -> super::Result<()> {
         let _ = self.put_site_api(&format!["users/all/{}/", &self.name])
         .json(info)?
         .send_success().await?;
         Ok(())
     }
 
-    pub async fn check_user_name(&self, name: &str) -> GeneralResult<UserNameCheck> {
+    pub async fn check_user_name(&self, name: &str) -> super::Result<UserNameCheck> {
         let response = self.get(&format!["accounts/checkusername/{name}/"]).send_success().await?;
         Ok(response.json().await?)
     }

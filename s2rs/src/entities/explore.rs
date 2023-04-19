@@ -10,7 +10,7 @@ use super::{stream::{GeneralStreamGen, GeneralStreamResult, GeneralStream}, Proj
 }
 #[async_trait] impl GeneralStreamGen for ExploreProjects {
     type Data = Project2;
-    type Error = api::GeneralError;
+    type Error = api::Error;
     type This = Me;
     async fn gen(&self, cursor: Cursor, _: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(Project2::vec_new(api.explore_projects(&self.query, cursor).await?, api.clone()))
@@ -22,7 +22,7 @@ use super::{stream::{GeneralStreamGen, GeneralStreamResult, GeneralStream}, Proj
 }
 #[async_trait] impl GeneralStreamGen for ExploreStudios {
     type Data = Studio2;
-    type Error = api::GeneralError;
+    type Error = api::Error;
     type This = Me;
     async fn gen(&self, cursor: Cursor, _: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(Studio2::vec_new(api.explore_studios(&self.query, cursor).await?, api.clone()))

@@ -9,7 +9,7 @@ use crate::cursor::Cursor;
 #[derive(Clone)] pub struct UserProjects;
 #[async_trait] impl GeneralStreamGen for UserProjects {
     type Data = Project3;
-    type Error = api::GeneralError;
+    type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(Project3::vec_new(api.get_user_projects(&this.name, cursor).await?, api.clone()))
@@ -21,7 +21,7 @@ use crate::cursor::Cursor;
 #[derive(Clone)] pub struct UserFavorites;
 #[async_trait] impl GeneralStreamGen for UserFavorites {
     type Data = Project3;
-    type Error = api::GeneralError;
+    type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(Project3::vec_new(api.get_user_favorites(&this.name, cursor).await?, api.clone()))
@@ -33,7 +33,7 @@ use crate::cursor::Cursor;
 #[derive(Clone)] pub struct UserCuratingStudios;
 #[async_trait] impl GeneralStreamGen for UserCuratingStudios {
     type Data = StudioMeta;
-    type Error = api::GeneralError;
+    type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(StudioMeta::vec_new(api.get_user_curating_studios(&this.name, cursor).await?, api.clone()))
@@ -45,7 +45,7 @@ use crate::cursor::Cursor;
 #[derive(Clone)] pub struct UserFollowers;
 #[async_trait] impl GeneralStreamGen for UserFollowers {
     type Data = UserMeta;
-    type Error = api::GeneralError;
+    type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(UserMeta::vec_new(api.get_user_followers(&this.name, cursor).await?, api.clone()))
@@ -57,7 +57,7 @@ use crate::cursor::Cursor;
 #[derive(Clone)] pub struct UserFollowing;
 #[async_trait] impl GeneralStreamGen for UserFollowing {
     type Data = UserMeta;
-    type Error = api::GeneralError;
+    type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(UserMeta::vec_new(api.get_user_following(&this.name, cursor).await?, api.clone()))
@@ -69,7 +69,7 @@ use crate::cursor::Cursor;
 #[derive(Clone)] pub struct UserProjectsLovedByFollowing;
 #[async_trait] impl GeneralStreamGen for UserProjectsLovedByFollowing {
     type Data = Project2;
-    type Error = api::GeneralError;
+    type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(Project2::vec_new(api.get_projects_loved_by_following(&this.name, cursor).await?, api.clone()))
@@ -81,7 +81,7 @@ use crate::cursor::Cursor;
 #[derive(Clone)] pub struct UserViews;
 #[async_trait] impl GeneralStreamGen for UserViews {
     type Data = Project2;
-    type Error = api::GeneralError;
+    type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(Project2::vec_new(api.get_projects_loved_by_following(&this.name, cursor).await?, api.clone()))
@@ -93,7 +93,7 @@ use crate::cursor::Cursor;
 #[derive(Clone)] pub struct UserProjectsSharedByFollowing;
 #[async_trait] impl GeneralStreamGen for UserProjectsSharedByFollowing {
     type Data = Project2;
-    type Error = api::GeneralError;
+    type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(Project2::vec_new(api.get_projects_shared_by_following(&this.name, cursor).await?, api.clone()))
@@ -105,7 +105,7 @@ use crate::cursor::Cursor;
 #[derive(Clone)] pub struct UserMessages;
 #[async_trait] impl GeneralStreamGen for UserMessages {
     type Data = UserMeta;
-    type Error = api::GeneralError;
+    type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(UserMeta::vec_new(api.get_user_following(&this.name, cursor).await?, api.clone()))
@@ -117,7 +117,7 @@ use crate::cursor::Cursor;
 #[derive(Clone)] pub struct UserFollowingActivity;
 #[async_trait] impl GeneralStreamGen for UserFollowingActivity {
     type Data = FollowingAction;
-    type Error = api::GeneralError;
+    type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(FollowingAction::vec_new(api.get_following_users_activity(&this.name, cursor).await?, api.clone()))
@@ -131,7 +131,7 @@ use crate::cursor::Cursor;
 #[cfg(feature = "html")]
 #[async_trait] impl GeneralStreamGen for UserComments {
     type Data = UserCommentMeta;
-    type Error = api::GeneralError;
+    type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(UserCommentMeta::vec_with_profile(api.get_user_comments(&this.name, cursor).await?, this.clone(), api.clone()))

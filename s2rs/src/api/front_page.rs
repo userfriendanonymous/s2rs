@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use crate::Api;
-use super::{GeneralResult, utils::{RequestBuilderUtils, ResponseUtils}, general_parser::GeneralParser};
+use super::{utils::{RequestBuilderUtils, ResponseUtils}, general_parser::GeneralParser};
 
 #[derive(Debug, Deserialize)]
 pub struct FrontPage {
@@ -93,17 +93,17 @@ pub struct FrontPageFeaturedStudio {
 // endregion: structures
 
 impl Api {
-    pub async fn get_front_page(&self) -> GeneralResult<FrontPage> {
+    pub async fn get_front_page(&self) -> super::Result<FrontPage> {
         let response = self.get_proxy("featured/").send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_news(&self) -> GeneralResult<Vec<News>> {
+    pub async fn get_news(&self) -> super::Result<Vec<News>> {
         let response = self.get("news").send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn get_projects_count(&self) -> GeneralResult<u64> {
+    pub async fn get_projects_count(&self) -> super::Result<u64> {
         let response = self.get("projects/count/all/").send_success().await?;
         let data: GeneralParser = response.json::<GeneralParser>().await?;
         Ok(data.i("count").u64()?)

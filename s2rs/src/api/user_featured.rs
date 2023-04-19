@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use crate::Api;
-use super::{GeneralResult, utils::{RequestBuilderUtils, ResponseUtils}};
+use super::utils::{RequestBuilderUtils, ResponseUtils};
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct UserFeatured {
@@ -38,7 +38,7 @@ pub struct UserFeaturedProfile {
 }
 
 impl Api {
-    pub async fn get_user_featured(&self, name: &str) -> GeneralResult<UserFeatured> {
+    pub async fn get_user_featured(&self, name: &str) -> super::Result<UserFeatured> {
         let response = self.get_site_api(&format!["users/all/{name}/"]).send_success().await?;
         Ok(response.json().await?)
     }

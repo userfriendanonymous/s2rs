@@ -1,4 +1,4 @@
-use super::{GeneralParser, ParsingCustomError, ParsingError, Api, utils::{ResponseUtils, RequestBuilderUtils}, GeneralResult, general_parser::GeneralParsable};
+use super::{GeneralParser, ParsingCustomError, ParsingError, Api, utils::{ResponseUtils, RequestBuilderUtils}, general_parser::GeneralParsable};
 use crate::cursor::Cursor;
 
 #[derive(Debug)]
@@ -72,7 +72,7 @@ impl GeneralParsable for StudioActionEvent {
 }
 
 impl Api {
-    pub async fn get_studio_activity(&self, id: u64, cursor: impl Into<Cursor>) -> GeneralResult<Vec<StudioAction>> {
+    pub async fn get_studio_activity(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<StudioAction>> {
         let response = self.get(&format!["studios/{id}/activity/"]).cursor(cursor).send_success().await?;
         response.general_parser_vec().await
     }

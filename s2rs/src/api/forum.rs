@@ -1,5 +1,5 @@
 use crate::Api;
-use super::{GeneralResult, utils::RequestBuilderUtils};
+use super::utils::RequestBuilderUtils;
 #[cfg(feature = "rss")] use super::ParsingCustomError;
 #[cfg(feature = "time")] use chrono::{DateTime, Utc};
 
@@ -57,13 +57,13 @@ impl ForumTopicRssPost {
 }
 
 impl Api {
-    pub async fn get_forum_post_content(&self, id: u64) -> GeneralResult<String> {
+    pub async fn get_forum_post_content(&self, id: u64) -> super::Result<String> {
         let response = self.get_base(&format!["discuss/post/{id}/source/"]).send_success().await?;
         Ok(response.text().await?)
     }
 
     #[cfg(feature = "rss")]
-    pub async fn get_forum_topic_rss(&self, id: u64) -> GeneralResult<ForumTopicRss> {
+    pub async fn get_forum_topic_rss(&self, id: u64) -> super::Result<ForumTopicRss> {
         let response = self.get_base(&format!["discuss/feeds/topic/{id}/"]).send_success().await?;
         let feed = feed_rs::parser::parse(response.text().await?.as_bytes()).map_err(|_| ParsingCustomError)?;
         Ok(ForumTopicRss::try_from_rss(feed)?)

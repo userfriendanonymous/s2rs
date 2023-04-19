@@ -1,5 +1,5 @@
 use crate::{Api, cursor::Cursor};
-use super::{Language, Project2, GeneralResult, utils::{RequestBuilderUtils, ResponseUtils}, Studio2};
+use super::{Language, Project2, utils::{RequestBuilderUtils, ResponseUtils}, Studio2};
 
 #[derive(Debug, Clone)]
 pub struct ExploreQuery {
@@ -40,12 +40,12 @@ impl AsRef<str> for ExploreMode {
 }
 
 impl Api {
-    pub async fn explore_projects(&self, query: &ExploreQuery, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Project2>> {
+    pub async fn explore_projects(&self, query: &ExploreQuery, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
         let response = self.get("explore/projects/").query(&query.as_query()).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn explore_studios(&self, query: &ExploreQuery, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Studio2>> {
+    pub async fn explore_studios(&self, query: &ExploreQuery, cursor: impl Into<Cursor>) -> super::Result<Vec<Studio2>> {
         let response = self.get("explore/studios/").query(&query.as_query()).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }

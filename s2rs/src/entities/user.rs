@@ -2,7 +2,7 @@
 use std::sync::Arc;
 use derivative::Derivative;
 use s2rs_derive::deref;
-use crate::api::{Api, self, GeneralResult, UserNameCheck};
+use crate::api::{Api, self, UserNameCheck};
 use super::UserFeatured;
 #[cfg(feature = "stream")] use super::{stream::GeneralStream, user_stream::*};
 #[cfg(feature = "stream")] use crate::cursor::Cursor;
@@ -119,15 +119,15 @@ impl User {
 }
 
 impl User {
-    pub async fn meta(self: &Arc<Self>) -> Result<Arc<UserMeta>, api::GeneralError> {
+    pub async fn meta(self: &Arc<Self>) -> Result<Arc<UserMeta>, api::Error> {
         Ok(UserMeta::with_this_this(self.api.get_user_meta(&self.name).await?, self.clone()))
     }
 
-    pub async fn message_count(&self) -> Result<u64, api::GeneralError> {
+    pub async fn message_count(&self) -> Result<u64, api::Error> {
         self.api.get_user_messages_count(&self.name).await
     }
 
-    pub async fn featured(self: &Arc<Self>) -> Result<UserFeatured, api::GeneralError> {
+    pub async fn featured(self: &Arc<Self>) -> Result<UserFeatured, api::Error> {
         Ok(UserFeatured::with_profile_this(self.api.get_user_featured(&self.name).await?, self.clone(), self.api.clone()))
     }
 
@@ -187,22 +187,22 @@ impl User {
         GeneralStream::with_this(UserComments, cursor.into(), self.clone(), self.api.clone())
     }
 
-    pub async fn follow(&self) -> Result<(), api::GeneralError> {
+    pub async fn follow(&self) -> Result<(), api::Error> {
         self.api.follow_user(&self.name).await?;
         Ok(())
     }
 
-    pub async fn unfollow(&self) -> Result<(), api::GeneralError> {
+    pub async fn unfollow(&self) -> Result<(), api::Error> {
         self.api.unfollow_user(&self.name).await?;
         Ok(())
     }
 
-    pub async fn send_comment(&self, content: impl Into<String>) -> Result<(), api::GeneralError> {
+    pub async fn send_comment(&self, content: impl Into<String>) -> Result<(), api::Error> {
         self.api.send_user_comment(&self.name, content.into(), None, None).await?;
         Ok(())
     }
 
-    pub async fn check(&self) -> GeneralResult<UserNameCheck> {
+    pub async fn check(&self) -> api::Result<UserNameCheck> {
         self.api.check_user_name(&self.name).await
     }
 }

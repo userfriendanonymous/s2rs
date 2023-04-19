@@ -3,7 +3,7 @@ use reqwest::{Response, RequestBuilder};
 use s2rs_derive::Forwarder;
 use serde::{de::DeserializeOwned, Serialize};
 use crate::cursor::Cursor;
-use super::{NetworkError, GeneralError, ParsingError, general_parser::{GeneralParsable, GeneralParser}};
+use super::{NetworkError, ParsingError, general_parser::{GeneralParsable, GeneralParser}};
 
 #[derive(Forwarder, Debug)]
 pub enum AsJsonError {
@@ -11,7 +11,7 @@ pub enum AsJsonError {
     #[forward] Decoding(reqwest::Error),
 }
 
-impl From<AsJsonError> for GeneralError {
+impl From<AsJsonError> for super::Error {
     fn from(value: AsJsonError) -> Self {
         match value {
             AsJsonError::Decoding(error) => Self::Network(NetworkError::Request(error)),
@@ -24,10 +24,10 @@ impl From<AsJsonError> for GeneralError {
 pub trait ResponseUtils where Self: Sized {
     fn only_success(self) -> Result<Self, NetworkError>;
     async fn json<'a, T: DeserializeOwned>(self) -> Result<T, AsJsonError>;
-    async fn general_parser<T: GeneralParsable>(self) -> Result<T, GeneralError>
-        where GeneralError: From<<T as GeneralParsable>::Error>;
-    async fn general_parser_vec<T: GeneralParsable>(self) -> Result<Vec<T>, GeneralError>
-        where GeneralError: From<<T as GeneralParsable>::Error>;
+    async fn general_parser<T: GeneralParsable>(self) -> Result<T, super::Error>
+        where super::Error: From<<T as GeneralParsable>::Error>;
+    async fn general_parser_vec<T: GeneralParsable>(self) -> Result<Vec<T>, super::Error>
+        where super::Error: From<<T as GeneralParsable>::Error>;
 }
 
 #[async_trait]
@@ -45,11 +45,11 @@ impl ResponseUtils for Response {
         Ok(serde_json::from_str::<T>(&text)?)
     }
 
-    async fn general_parser<T: GeneralParsable>(self) -> Result<T, GeneralError> where GeneralError: From<<T as GeneralParsable>::Error> {
+    async fn general_parser<T: GeneralParsable>(self) -> Result<T, super::Error> where super::Error: From<<T as GeneralParsable>::Error> {
         Ok(T::parse(&self.json::<GeneralParser>().await?)?)
     }
 
-    async fn general_parser_vec<T: GeneralParsable>(self) -> Result<Vec<T>, GeneralError> where GeneralError: From<<T as GeneralParsable>::Error> {
+    async fn general_parser_vec<T: GeneralParsable>(self) -> Result<Vec<T>, super::Error> where super::Error: From<<T as GeneralParsable>::Error> {
         Ok(T::parse_vec(&self.json::<Vec<GeneralParser>>().await?)?)
     }
 }

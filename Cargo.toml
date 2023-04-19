@@ -1,2 +1,2 @@
 [workspace]
-members = ["s2rs", "s2rs-derive", "testing"]
+members = ["s2rs", "s2rs-derive", "testing", "s2rs-sdb"]

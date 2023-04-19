@@ -1,4 +1,4 @@
-use super::{general_parser::{GeneralParser, GeneralParsable}, Api, utils::{ResponseUtils, RequestBuilderUtils}, GeneralResult, ParsingCustomError};
+use super::{general_parser::{GeneralParser, GeneralParsable}, Api, utils::{ResponseUtils, RequestBuilderUtils}, ParsingCustomError};
 use crate::cursor::Cursor;
 
 pub struct Message {
@@ -138,7 +138,7 @@ impl GeneralParsable for MessageEvent {
 }
 
 impl Api {
-    pub async fn get_user_messages(&self, name: &str, cursor: impl Into<Cursor>) -> GeneralResult<Vec<Message>> {
+    pub async fn get_user_messages(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Message>> {
         let response = self.get(&format!["users/{name}/messages/"]).cursor(cursor).send_success().await?;
         response.general_parser_vec().await
     }

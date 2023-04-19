@@ -222,7 +222,7 @@ impl Studio {
     /// // ...
     /// # })
     /// ```
-    pub async fn meta(self: &Arc<Self>) -> Result<Arc<StudioMeta>, api::GeneralError> {
+    pub async fn meta(self: &Arc<Self>) -> Result<Arc<StudioMeta>, api::Error> {
         Ok(StudioMeta::with_this_this(self.api.get_studio_meta(self.id).await?, self.clone()))
     }
 
@@ -339,7 +339,7 @@ impl Studio {
     /// studio.invite("griffpatch").await.unwrap();
     /// # })
     /// ```
-    pub async fn invite(&self, name: &str) -> Result<(), api::GeneralError> {
+    pub async fn invite(&self, name: &str) -> Result<(), api::Error> {
         self.api.invite_studio_curator(self.id, name).await
     }
 
@@ -354,7 +354,7 @@ impl Studio {
     /// studio.add_project(823872487).await.unwrap();
     /// # })
     /// ```
-    pub async fn add_project(&self, id: u64) -> Result<(), api::GeneralError> {
+    pub async fn add_project(&self, id: u64) -> Result<(), api::Error> {
         self.api.add_studio_project(self.id, id).await
     }
 
@@ -369,7 +369,7 @@ impl Studio {
     /// studio.open().await.unwrap();
     /// # })
     /// ```
-    pub async fn open(&self) -> Result<(), api::GeneralError> {
+    pub async fn open(&self) -> Result<(), api::Error> {
         self.api.open_studio(self.id).await
     }
 
@@ -384,7 +384,7 @@ impl Studio {
     /// studio.close().await.unwrap();
     /// # })
     /// ```
-    pub async fn close(&self) -> Result<(), api::GeneralError> {
+    pub async fn close(&self) -> Result<(), api::Error> {
         self.api.close_studio(self.id).await
     }
 
@@ -399,7 +399,7 @@ impl Studio {
     /// studio.send_comment("Hello everyone!").await.unwrap();
     /// # })
     /// ```
-    pub async fn send_comment(&self, content: &str) -> Result<(), api::GeneralError> {
+    pub async fn send_comment(&self, content: &str) -> Result<(), api::Error> {
         self.api.send_studio_comment(self.id, content, None, None).await
     }
 
@@ -414,7 +414,7 @@ impl Studio {
     /// studio.follow().await.unwrap();
     /// # })
     /// ```
-    pub async fn follow(&self) -> Result<(), api::GeneralError> {
+    pub async fn follow(&self) -> Result<(), api::Error> {
         self.api.follow_studio(self.id).await
     }
 
@@ -429,7 +429,7 @@ impl Studio {
     /// studio.unfollow().await.unwrap();
     /// # })
     /// ```
-    pub async fn unfollow(&self) -> Result<(), api::GeneralError> {
+    pub async fn unfollow(&self) -> Result<(), api::Error> {
         self.api.unfollow_studio(self.id).await
     }
 
@@ -446,7 +446,7 @@ impl Studio {
     /// studio.accept_invite().await.unwrap();
     /// # })
     /// ```
-    pub async fn accept_invite(&self) -> Result<(), api::GeneralError> {
+    pub async fn accept_invite(&self) -> Result<(), api::Error> {
         self.api.accept_studio_invite(self.id).await
     }
 
@@ -462,7 +462,7 @@ impl Studio {
     /// studio.toggle_commenting().await.unwrap();
     /// # })
     /// ```
-    pub async fn toggle_commenting(&self) -> Result<(), api::GeneralError> {
+    pub async fn toggle_commenting(&self) -> Result<(), api::Error> {
         self.api.toggle_studio_commenting(self.id).await
     }
 
@@ -478,7 +478,7 @@ impl Studio {
     /// studio.promote("griffpatch").await.unwrap();
     /// # })
     /// ```
-    pub async fn promote(&self, name: &str) -> Result<(), api::GeneralError> {
+    pub async fn promote(&self, name: &str) -> Result<(), api::Error> {
         self.api.promote_studio_curator(self.id, name).await
     }
 
@@ -498,7 +498,7 @@ impl Studio {
     /// }).await.unwrwap();
     /// # })
     /// ```
-    pub async fn set_info(&self, info: &StudioInfo) -> Result<(), api::GeneralError> {
+    pub async fn set_info(&self, info: &StudioInfo) -> Result<(), api::Error> {
         self.api.set_studio_info(self.id, info).await
     }
 
@@ -514,7 +514,7 @@ impl Studio {
     /// studio.set_title("Some cool studio").await.unwrap();
     /// # })
     /// ```
-    pub async fn set_title(&self, content: impl Into<String>) -> Result<(), api::GeneralError> {
+    pub async fn set_title(&self, content: impl Into<String>) -> Result<(), api::Error> {
         self.set_info(&StudioInfo {
             description: None,
             title: Some(content.into())
@@ -533,7 +533,7 @@ impl Studio {
     /// studio.set_title("Some cool description").await.unwrap();
     /// # })
     /// ```
-    pub async fn set_description(&self, content: impl Into<String>) -> Result<(), api::GeneralError> {
+    pub async fn set_description(&self, content: impl Into<String>) -> Result<(), api::Error> {
         self.set_info(&StudioInfo {
             description: Some(content.into()),
             title: None
