@@ -1,7 +1,8 @@
-use s2rs::{Api, api::GeneralResult};
+use s2rs_derive::Forwarder;
 use serde::Deserialize;
+use super::{Api, utils::ResponseUtils};
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct UserMeta {
     pub id: u64,
     pub sys_id: u64,
@@ -13,23 +14,18 @@ pub struct UserMeta {
     pub work: String,
     pub status: UserStatus,
     pub school: Option<String>,
-    pub statistics: UserStatistics
+    #[serde( rename = "statistics" )]
+    pub stats: UserStats
 }
 
-#[derive(Clone)]
+#[derive(Deserialize, Debug, Clone, Copy)]
 pub enum UserStatus {
     Scratcher,
     NewScratcher,
 }
 
-impl Deserialize for UserStatus {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
-        
-    }
-}
-
-#[derive(Deserialize, Clone)]
-pub struct UserStatistics {
+#[derive(Deserialize, Debug, Clone)]
+pub struct UserStats {
     pub ranks: UserRanks,
     pub loves: u32,
     pub favorites: u32,
@@ -39,7 +35,7 @@ pub struct UserStatistics {
     pub following: u32
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct UserRanks {
     pub country: UserRanksCountry,
     pub loves: u32,
@@ -50,7 +46,7 @@ pub struct UserRanks {
     pub following: u32
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct UserRanksCountry {
     pub loves: u32,
     pub favorites: u32,
@@ -59,3 +55,22 @@ pub struct UserRanksCountry {
     pub following: u32,
 }
 
+#[derive(Forwarder, Debug)]
+pub enum GetUserError {
+    #[forward(reqwest::Error, super::utils::AsJsonError)]
+    This(super::Error),
+    Invalid,
+    NotFound
+}
+
+impl Api {
+    pub async fn get_user_sdb(&self, name: &str) -> Result<UserMeta, GetUserError> {
+        let response = self.get(&format!["user/info/{name}/"]).send().await?;
+        Ok(response.json().await?)
+    }
+
+    pub async fn get_users_leader_board(&self, country: &str, page: u32) -> Result<Vec<UserMeta>, GetUserError> {
+        let response = self.get(&format!["user/rank/{country}/followers/{page}/"]).send().await?;
+        Ok(response.json().await?)
+    }
+}

@@ -1,5 +1,5 @@
-use crate::{Api, cursor::Cursor};
-use super::{Language, Project2, utils::{RequestBuilderUtils, ResponseUtils}, Studio2};
+use crate::{Api, cursor::Cursor, Language};
+use super::{Project2, utils::{RequestBuilderUtils, ResponseUtils}, Studio2};
 
 #[derive(Debug, Clone)]
 pub struct ExploreQuery {

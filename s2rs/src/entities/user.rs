@@ -106,14 +106,14 @@ impl UserWithId {
 pub struct User {
     #[derivative(Debug="ignore", PartialEq="ignore")]
     api: Arc<Api>,
-    pub name: String,
+    pub name: Arc<String>,
 }
 
 impl User {
-    pub fn new(name: String, api: Arc<Api>) -> Arc<Self> {
+    pub fn new(name: impl Into<Arc<String>>, api: Arc<Api>) -> Arc<Self> {
         Arc::new(Self {
             api,
-            name
+            name: name.into()
         })
     }
 }

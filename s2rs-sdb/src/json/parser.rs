@@ -1,15 +1,18 @@
 use serde::Deserialize;
 use serde_json::Value;
 
+#[derive(Debug)]
 pub enum Error {
     Expected(ErrorExpected)
 }
 
+#[derive(Debug)]
 pub struct ErrorExpected {
     pub found: Value,
     pub expected: ErrorExpectedVariant
 }
 
+#[derive(Debug)]
 pub enum ErrorExpectedVariant {
     Bool,
     String,

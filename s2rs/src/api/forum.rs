@@ -3,6 +3,39 @@ use super::utils::RequestBuilderUtils;
 #[cfg(feature = "rss")] use super::ParsingCustomError;
 #[cfg(feature = "time")] use chrono::{DateTime, Utc};
 
+// region: ForumCategory
+pub enum ForumCategory {
+    Announcements,
+    NewScratchers,
+    HelpWithScripts,
+    ShowAndTell,
+    ProjectIdeas,
+    Collaboration,
+    Requests,
+    ProjectSaveLevelCodes,
+    QuestionsAboutScratch,
+    Suggestions,
+    BugsAndGlitches,
+    AdvancedTopics,
+    ConnectingToThePhysicalWorld,
+    DevelopingScratchExtensions,
+    OpenSourceProjects,
+    ThingsIAmMakingAndCreating,
+    ThingsIAmReadingAndPlaying,
+}
+
+impl AsRef<str> for ForumCategory {
+    fn as_ref(&self) -> &str {
+        match self {
+            Self::AdvancedTopics => "AdvancedTopics",
+            Self::Announcements => "Announcements",
+            Self::BugsAndGlitches => "BugsAndGlitches",
+            _ => todo!()
+        }
+    }
+}
+// endregion: ForumCategory
+
 #[cfg(feature = "time")]
 pub struct ForumTopicRss {
     pub title: String,

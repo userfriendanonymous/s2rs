@@ -16,7 +16,6 @@ pub use user_comment::*;
 pub use cloud_action::*;
 pub use user_featured::*;
 pub use front_page::*;
-pub use language::*;
 pub use explore::*;
 pub use search::*;
 pub use forum::*;
@@ -36,7 +35,6 @@ pub mod cloud;
 pub mod forum;
 pub mod user_featured;
 pub mod front_page;
-pub mod language;
 pub mod explore;
 pub mod search;
 mod utils;
@@ -141,7 +139,7 @@ pub struct ExtensionPipe {
 }
 
 pub trait Extension {
-    fn extended(pipe: ExtensionPipe) -> Arc<Self>;
+    fn extended(pipe: ExtensionPipe, this: Arc<Api>) -> Arc<Self>;
 }
 
 #[derive(Debug)]
@@ -152,12 +150,12 @@ pub struct Api {
 }
 
 impl Api {
-    pub fn extend<T: Extension>(&self) -> Arc<T> {
+    pub fn extend<T: Extension>(self: &Arc<Self>) -> Arc<T> {
         T::extended(ExtensionPipe {
             client: self.client.clone(),
             name: self.name.clone(),
             headers: self.headers.local.clone()
-        })
+        }, self.clone())
     }
 
     pub fn new(name: impl Into<Arc<String>>) -> Arc<Self> {

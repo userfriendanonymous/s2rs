@@ -7,7 +7,7 @@ pub struct ExtensionPipe {
 }
 
 pub trait Extension {
-    fn extended(pipe: ExtensionPipe) -> Arc<Self>;
+    fn extended(pipe: ExtensionPipe, this: Arc<Session>) -> Arc<Self>;
 }
 
 /// Session abstracts away plain and flat api requests and makes library usage very intuitive.
@@ -26,15 +26,15 @@ pub struct Session {
 }
 
 impl Session {
-    pub fn extend<T: Extension>(&self) -> Arc<T> {
+    pub fn extend<T: Extension>(self: &Arc<Self>) -> Arc<T> {
         T::extended(ExtensionPipe {
             api: self.api.clone(),
             me: self.me.clone()
-        })
+        }, self.clone())
     }
 
-    pub fn new(name: impl Into<String>) -> Arc<Self> {
-        let name: String = name.into();
+    pub fn new(name: impl Into<Arc<String>>) -> Arc<Self> {
+        let name: Arc<_> = name.into();
         let api = Api::new(name.clone());
         Arc::new(Self {
             me: Me::with_this(User::new(name, api.clone()), api.clone()),
@@ -42,8 +42,8 @@ impl Session {
         })
     }
 
-    pub fn with_auth(name: impl Into<String>, tokens: &Tokens) -> Result<Arc<Self>, api::WithAuthError> {
-        let name: String = name.into();
+    pub fn with_auth(name: impl Into<Arc<String>>, tokens: &Tokens) -> Result<Arc<Self>, api::WithAuthError> {
+        let name: Arc<_> = name.into();
         let api = Api::with_auth(name.clone(), tokens)?;
         Ok(Arc::new(Self {
             me: Me::with_this(User::new(name, api.clone()), api.clone()),
