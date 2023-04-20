@@ -117,7 +117,7 @@ impl ForumTopicRssPost {
 }
 // endregion: ForumTopicRssPost
 
-#[derive(Forwarder)]
+#[derive(Forwarder, Debug)]
 pub enum GetForumTopicRssError {
     #[forward] Parsing(ForumTopicRssParseError),
     #[forward] Rss(feed_rs::parser::ParseFeedError),

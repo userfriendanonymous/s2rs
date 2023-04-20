@@ -1,4 +1,3 @@
-use std::borrow::Cow;
 use s2rs_derive::Forwarder;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -226,12 +225,13 @@ impl Api {
         }
     }
 
-    pub async fn set_user_icon<B, FN>(&self, buffer: B, file_name: FN) -> super::Result<()>
-    where B: Into<Cow<'static, [u8]>>, FN: Into<Cow<'static, str>> {
+    #[cfg(feature = "file")]
+    pub async fn set_user_icon<B>(&self, buffer: B) -> super::Result<()>
+    where B: Into<std::borrow::Cow<'static, [u8]>> {
         use reqwest::multipart::{Form, Part};
 
         let form = Form::new()
-        .part("file", Part::bytes(buffer).file_name(file_name));
+        .part("file", Part::bytes(buffer).file_name(""));
         let response = self.post_site_api(&format!["users/all/{}/", &self.name]).multipart(form).send_success().await?;
         dbg![ response.json::<Value>().await.unwrap().to_string() ];
         Ok(())

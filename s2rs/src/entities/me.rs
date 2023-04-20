@@ -1,4 +1,4 @@
-use std::{sync::Arc, borrow::Cow};
+use std::sync::Arc;
 use crate::{Api, api::{UserInfo, FeaturedLabel, self}};
 use super::{User, FrontPage};
 use derivative::Derivative;
@@ -52,8 +52,9 @@ impl Me {
         self.api.get_projects_count().await
     }
 
-    pub async fn set_icon<B, FN>(&self, buffer: B, file_name: FN) -> api::Result<()>
-    where B: Into<Cow<'static, [u8]>>, FN: Into<Cow<'static, str>> {
-        self.api.set_user_icon(buffer, file_name).await
+    #[cfg(feature = "file")]
+    pub async fn set_icon<B>(&self, buffer: B) -> api::Result<()>
+    where B: Into<std::borrow::Cow<'static, [u8]>> {
+        self.api.set_user_icon(buffer).await
     }
 }

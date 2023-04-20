@@ -257,7 +257,8 @@ impl Api {
         }
     }
 
-    // pub async fn set_project_thumbnail(&self, file: &tokio::fs::File) -> super::Result<()> {
-    //     let _ = self.
-    // }
+    pub async fn set_project_thumbnail(&self, id: u64, buffer: Vec<u8>) -> super::Result<()> {
+        let _ = self.post_internal_api(&format!["project/thumbnail/{id}/set/"]).body(buffer).send_success().await?;
+        Ok(())
+    }
 }

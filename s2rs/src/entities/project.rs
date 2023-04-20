@@ -426,5 +426,9 @@ impl Project {
     pub async fn thumbnail(&self, width: u16, height: u16) -> api::Result<bytes::Bytes> {
         self.api.get_project_thumbnail(self.id, width, height).await
     }
+
+    pub async fn set_thumbnail(&self, buffer: Vec<u8>) -> api::Result<()> {
+        self.api.set_project_thumbnail(self.id, buffer).await
+    }
 }
 // endregion: Project

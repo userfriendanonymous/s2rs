@@ -237,4 +237,13 @@ impl Api {
         self.request_uploads(Method::GET, path)
     }
     // endregion: uploads
+
+    // region: internal_api
+    fn request_internal_api(&self, method: Method, path: &str) -> RequestBuilder {
+        self.https_request(method, &format!["{}internalapi/{path}", domains::BASE])
+    }
+    fn post_internal_api(&self, path: &str) -> RequestBuilder {
+        self.request_internal_api(Method::POST, path)
+    }
+    // endregion: internal_api
 }
