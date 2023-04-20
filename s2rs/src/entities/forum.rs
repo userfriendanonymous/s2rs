@@ -73,7 +73,7 @@ impl ForumTopic {
     }
 
     #[cfg(feature = "rss")]
-    pub async fn rss(self: &Arc<Self>) -> api::Result<ForumTopicRss> {
+    pub async fn rss(self: &Arc<Self>) -> Result<ForumTopicRss, api::GetForumTopicRssError> {
         Ok(ForumTopicRss::with_this(self.api.get_forum_topic_rss(self.id).await?, self.clone(), self.api.clone()))
     }
 }

@@ -48,7 +48,7 @@ impl Me {
         self.api.get_news().await
     }
 
-    pub async fn global_projects_count(&self) -> api::Result<u64> {
+    pub async fn global_projects_count(&self) -> Result<u64, api::GetProjectsCountError> {
         self.api.get_projects_count().await
     }
 

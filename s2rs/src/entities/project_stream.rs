@@ -32,7 +32,7 @@ use async_trait::async_trait;
 #[derive(Clone)] pub struct ProjectCloudActivity;
 #[async_trait] impl GeneralStreamGen for ProjectCloudActivity {
     type Data = CloudAction;
-    type Error = api::Error;
+    type Error = api::GetProjectCloudActivityError;
     type This = Project;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(CloudAction::vec_new(api.get_project_cloud_activity(this.id, cursor).await?, api.clone()))

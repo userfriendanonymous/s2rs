@@ -56,7 +56,7 @@ use async_trait::async_trait;
 #[derive(Clone)] pub struct StudioActivity;
 #[async_trait] impl GeneralStreamGen for StudioActivity {
     type Data = StudioAction;
-    type Error = api::Error;
+    type Error = api::GetStudioActivityError;
     type This = Studio;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(StudioAction::vec_new(api.get_studio_activity(this.id, cursor).await?, api.clone()))

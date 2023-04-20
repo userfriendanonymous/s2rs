@@ -117,7 +117,7 @@ use crate::cursor::Cursor;
 #[derive(Clone)] pub struct UserFollowingActivity;
 #[async_trait] impl GeneralStreamGen for UserFollowingActivity {
     type Data = FollowingAction;
-    type Error = api::Error;
+    type Error = api::GetFollowingUsersActivity;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(FollowingAction::vec_new(api.get_following_users_activity(&this.name, cursor).await?, api.clone()))
@@ -131,7 +131,7 @@ use crate::cursor::Cursor;
 #[cfg(feature = "html")]
 #[async_trait] impl GeneralStreamGen for UserComments {
     type Data = UserCommentMeta;
-    type Error = api::Error;
+    type Error = api::GetUserCommentsError;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(UserCommentMeta::vec_with_profile(api.get_user_comments(&this.name, cursor).await?, this.clone(), api.clone()))

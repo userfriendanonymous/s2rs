@@ -2,7 +2,7 @@ use std::borrow::Cow;
 use s2rs_derive::Forwarder;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use crate::cursor::Cursor;
+use crate::{cursor::Cursor, json};
 use reqwest::StatusCode;
 use super::{Api, utils::{RequestBuilderUtils, ResponseUtils}, Project2};
 
@@ -115,12 +115,18 @@ impl Serialize for FeaturedLabel {
 }
 // endregion: UserInfo
 
-#[derive(Forwarder)]
+#[derive(Forwarder, Debug)]
 pub enum SetUserIconError {
     #[forward(StatusCode)]
     This(super::Error),
     TooLarge, // thumbnail-too-large
     Invalid // image-invalid
+}
+
+#[derive(Forwarder, Debug)]
+pub enum GetUserMessagesCountError {
+    #[forward] This(super::Error),
+    #[forward] Parsing(json::ExpectedError),
 }
 
 impl Api {
@@ -129,11 +135,11 @@ impl Api {
         Ok(response.json().await?)
     }
 
-    pub async fn get_user_messages_count(&self, name: &str) -> super::Result<u64> {
+    pub async fn get_user_messages_count(&self, name: &str) -> Result<u64, GetUserMessagesCountError> {
         let response = self.get(&format!["users/{name}/messages/count"]).send_success().await?;
 
-        let data: Value = response.json().await?;
-        let count = data["count"].as_u64().ok_or(((((())))))?;
+        let data: json::Parser = response.json().await?;
+        let count = data.i("count").u64()?;
         Ok(count)
     }
 

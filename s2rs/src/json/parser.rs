@@ -12,7 +12,7 @@ pub struct ExpectedError {
     pub expected: ExpectedErrorVariant
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum ExpectedErrorVariant {
     Bool,
     String,

@@ -1,5 +1,6 @@
 use super::Api;
 #[cfg(feature = "html")] use html_parser::{Dom, Element};
+use s2rs_derive::Forwarder;
 use serde_json::json;
 #[cfg(feature = "html")] use crate::cursor::Cursor;
 use super::utils::RequestBuilderUtils;
@@ -18,14 +19,9 @@ pub enum CommentContentFragment {
 #[derive(Debug)]
 pub struct CommentContent(pub Vec<CommentContentFragment>);
 
-#[derive(Debug, Clone)]
-pub enum CommentContentParseError {
-
-}
-
 impl CommentContent {
     #[cfg(feature = "html")]
-    fn try_from_html(element: &Element) -> Result<Self, CommentContentParseError> {
+    fn try_from_html(element: &Element) -> Option<Self> {
         use crate::html::ElementUtils;
 
         fn get_link_data(element: &Element) -> Option<(String, String)> {
@@ -69,14 +65,9 @@ pub struct UserReply {
     pub created_at: String,
 }
 
-#[derive(Clone, Debug)]
-pub enum UserReplyParseError {
-
-}
-
 impl UserReply {
     #[cfg(feature = "html")]
-    fn try_from_html(element: &Element, profile_name: String) -> Result<Self, UserReplyParseError> {
+    fn try_from_html(element: &Element, profile_name: String) -> Option<Self> {
         use crate::html::ElementUtils;
 
         let info = element.child_by_class("comment")?;
@@ -110,14 +101,9 @@ pub struct UserComment {
     // pub reply_count: u32,
 }
 
-#[derive(Debug, Clone)]
-pub enum UserCommentParseError {
-
-}
-
 impl UserComment {
     #[cfg(feature = "html")]
-    fn try_from_html(element: &Element, profile_name: String) -> Result<Self, UserCommentParseError> {
+    fn try_from_html(element: &Element, profile_name: String) -> Option<Self> {
         use crate::html::ElementUtils;
 
         let info = element.child_by_class("comment")?;
@@ -166,9 +152,11 @@ impl UserComment {
 }
 // endregion: UserComment
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Forwarder)]
 pub enum GetUserCommentsError {
-
+    Parsing,
+    #[forward(reqwest::Error)]
+    This(super::Error)
 }
 
 impl Api {
@@ -177,14 +165,14 @@ impl Api {
         let response = self.get_site_api(&format!["comments/user/{name}/"]).cursor(cursor).send_success().await?;
         let data = response.text().await?;
 
-        let dom = Dom::parse(&data).ok().ok_or(())?;
+        let dom = Dom::parse(&data).ok().ok_or(GetUserCommentsError::Parsing)?;
 
         let mut result = Vec::new();
 
         for node in &dom.children {
             if let Some(element) = node.element() {
                 if element.classes.contains(&"top-level-reply".to_string()) {
-                    result.push(UserComment::try_from_html(element, name.to_owned()).ok_or(())?);
+                    result.push(UserComment::try_from_html(element, name.to_owned()).ok_or(GetUserCommentsError::Parsing)?);
                 }
             }
         }

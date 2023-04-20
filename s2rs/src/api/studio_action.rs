@@ -1,7 +1,6 @@
 use std::str::FromStr;
-
 use s2rs_derive::Forwarder;
-
+use super::utils::ResponseUtils;
 use super::{Api, utils::RequestBuilderUtils};
 use crate::cursor::Cursor;
 use crate::json;
@@ -24,16 +23,17 @@ pub enum StudioActionParseIdError {
 
 #[derive(Forwarder, Clone, Debug)]
 pub enum StudioActionParseError {
-    #[forward(<u64 as FromStr>::Err)]
-    Id(StudioActionParseIdError),
+    #[forward] Id(StudioActionParseIdError),
+    #[forward] Expected(json::ExpectedError),
     #[forward] Event(StudioActionEventParseError)
 }
 
 impl json::Parsable for StudioAction {
     type Error = StudioActionParseError;
     fn parse(data: &json::Parser) -> Result<Self, Self::Error> {
+        type IdErr = StudioActionParseIdError;
         let id = data.i("id").string()?;
-        let id = id.split('-').last().ok_or(StudioActionParseIdError::NoContent)?.parse()?;
+        let id = id.split('-').last().ok_or(IdErr::NoContent)?.parse().map_err(IdErr::Parsing)?;
 
         Ok(StudioAction {
             actor_name: data.i("actor_username").string()?,
@@ -65,7 +65,7 @@ pub enum StudioActionEvent {
     },
 }
 
-#[derive(Forwarder)]
+#[derive(Forwarder, Clone, Debug)]
 pub enum StudioActionEventParseError {
     #[forward] Expected(json::ExpectedError),
     InvalidType(String)
@@ -95,9 +95,15 @@ impl json::Parsable for StudioActionEvent {
     }
 }
 
+#[derive(Forwarder, Debug)]
+pub enum GetStudioActivityError {
+    #[forward] This(super::Error),
+    #[forward] Parsing(StudioActionParseError),
+}
+
 impl Api {
-    pub async fn get_studio_activity(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<StudioAction>> {
+    pub async fn get_studio_activity(&self, id: u64, cursor: impl Into<Cursor>) -> Result<Vec<StudioAction>, GetStudioActivityError> {
         let response = self.get(&format!["studios/{id}/activity/"]).cursor(cursor).send_success().await?;
-        response.general_parser_vec().await
+        response.json_parser_vec().await
     }
 }

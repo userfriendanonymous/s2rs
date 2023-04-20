@@ -123,7 +123,7 @@ impl User {
         Ok(UserMeta::with_this_this(self.api.get_user_meta(&self.name).await?, self.clone()))
     }
 
-    pub async fn message_count(&self) -> Result<u64, api::Error> {
+    pub async fn message_count(&self) -> Result<u64, api::GetUserMessagesCountError> {
         self.api.get_user_messages_count(&self.name).await
     }
 

@@ -1,9 +1,10 @@
 use s2rs_derive::Forwarder;
-
+use super::utils::ResponseUtils;
 use super::{Api, utils::RequestBuilderUtils};
 use crate::cursor::Cursor;
 use crate::json;
 
+// region: Message
 pub struct Message {
     pub id: u64,
     pub created_at: String,
@@ -13,14 +14,14 @@ pub struct Message {
     pub event_type: String,
 }
 
-#[derive(Forwarder)]
+#[derive(Forwarder, Debug, Clone)]
 pub enum MessageParseError {
     #[forward] Expected(json::ExpectedError),
     #[forward] Event(MessageEventParseError)
 }
 
 impl json::Parsable for Message {
-    type Error = json::ExpectedError;
+    type Error = MessageParseError;
     fn parse(data: &json::Parser) -> Result<Self, Self::Error> {
         Ok(Self {
             id: data.i("id").u64()?,
@@ -32,7 +33,9 @@ impl json::Parsable for Message {
         })
     }
 }
+// endregion: Message
 
+// region: MessageCommentLocation
 pub enum MessageCommentLocation {
     Profile,
     Project,
@@ -49,7 +52,9 @@ impl MessageCommentLocation {
         })
     }
 }
+// endregion: MessageCommentLocation
 
+// region: MessageEvent
 pub enum MessageEvent {
     FollowUser {
         to_id: u64,
@@ -97,7 +102,7 @@ pub enum MessageEvent {
     Welcome
 }
 
-#[derive(Forwarder)]
+#[derive(Forwarder, Debug, Clone)]
 pub enum MessageEventParseError {
     #[forward] Expected(json::ExpectedError),
     #[forward] CommentLocation(u8),
@@ -158,10 +163,17 @@ impl json::Parsable for MessageEvent {
         })
     }
 }
+// endregion: MessageEvent
+
+#[derive(Forwarder, Debug)]
+pub enum GetUserMessagesError {
+    #[forward] This(super::Error),
+    #[forward] Parsing(MessageParseError)
+}
 
 impl Api {
-    pub async fn get_user_messages(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Message>> {
+    pub async fn get_user_messages(&self, name: &str, cursor: impl Into<Cursor>) -> Result<Vec<Message>, GetUserMessagesError> {
         let response = self.get(&format!["users/{name}/messages/"]).cursor(cursor).send_success().await?;
-        response.general_parser_vec().await
+        response.json_parser_vec().await
     }
 }

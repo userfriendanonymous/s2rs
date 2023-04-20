@@ -1,3 +1,4 @@
+use s2rs_derive::Forwarder;
 use serde::Deserialize;
 use crate::Api;
 use super::utils::{RequestBuilderUtils, ResponseUtils};
@@ -93,6 +94,12 @@ pub struct FrontPageFeaturedStudio {
 }
 // endregion: structures
 
+#[derive(Forwarder, Debug)]
+pub enum GetProjectsCountError {
+    #[forward] Expected(json::ExpectedError),
+    #[forward] This(super::Error)
+}
+
 impl Api {
     pub async fn get_front_page(&self) -> super::Result<FrontPage> {
         let response = self.get_proxy("featured/").send_success().await?;
@@ -104,7 +111,7 @@ impl Api {
         Ok(response.json().await?)
     }
 
-    pub async fn get_projects_count(&self) -> super::Result<u64> {
+    pub async fn get_projects_count(&self) -> Result<u64, GetProjectsCountError> {
         let response = self.get("projects/count/all/").send_success().await?;
         let data: json::Parser = response.json().await?;
         Ok(data.i("count").u64()?)
