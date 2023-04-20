@@ -1,8 +1,12 @@
+use std::borrow::Cow;
+use s2rs_derive::Forwarder;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use crate::cursor::Cursor;
-use super::{Api, utils::{ResponseUtils, RequestBuilderUtils}, ParsingCustomError, Project2};
+use reqwest::StatusCode;
+use super::{Api, utils::{RequestBuilderUtils, ResponseUtils}, Project2};
 
+// region: User
 #[derive(Deserialize, Debug)]
 pub struct User {
     pub id: u64,
@@ -41,7 +45,9 @@ pub struct UserProfileImages {
 pub struct UserHistory {
     pub joined: String
 }
+// endregion: User
 
+// region: UserNameCheck
 #[derive(Debug, PartialEq, Eq)]
 pub enum UserNameCheck {
     Valid,
@@ -64,6 +70,7 @@ impl<'de> Deserialize<'de> for UserNameCheck {
         })
     }
 }
+// endregion: UserNameCheck
 
 // region: UserInfo
 #[derive(Debug, Default, Serialize)]
@@ -108,6 +115,14 @@ impl Serialize for FeaturedLabel {
 }
 // endregion: UserInfo
 
+#[derive(Forwarder)]
+pub enum SetUserIconError {
+    #[forward(StatusCode)]
+    This(super::Error),
+    TooLarge, // thumbnail-too-large
+    Invalid // image-invalid
+}
+
 impl Api {
     pub async fn get_user_meta(&self, name: &str) -> super::Result<User> {
         let response = self.get(&format!["users/{name}"]).send_success().await?;
@@ -118,7 +133,7 @@ impl Api {
         let response = self.get(&format!["users/{name}/messages/count"]).send_success().await?;
 
         let data: Value = response.json().await?;
-        let count = data["count"].as_u64().ok_or(ParsingCustomError)?;
+        let count = data["count"].as_u64().ok_or(((((())))))?;
         Ok(count)
     }
 
@@ -201,7 +216,18 @@ impl Api {
         if status.is_success() || status.as_u16() == 302 {
             Ok(response.bytes().await?)
         } else {
-            Err(super::NetworkError::Status(status))?
+            Err(status)?
         }
+    }
+
+    pub async fn set_user_icon<B, FN>(&self, buffer: B, file_name: FN) -> super::Result<()>
+    where B: Into<Cow<'static, [u8]>>, FN: Into<Cow<'static, str>> {
+        use reqwest::multipart::{Form, Part};
+
+        let form = Form::new()
+        .part("file", Part::bytes(buffer).file_name(file_name));
+        let response = self.post_site_api(&format!["users/all/{}/", &self.name]).multipart(form).send_success().await?;
+        dbg![ response.json::<Value>().await.unwrap().to_string() ];
+        Ok(())
     }
 }

@@ -1,5 +1,8 @@
-use super::{Api, utils::{RequestBuilderUtils, ResponseUtils}, ParsingCustomError};
-use super::general_parser::{GeneralParser, GeneralParsable};
+use s2rs_derive::Forwarder;
+use reqwest::StatusCode;
+use super::utils::ResponseUtils;
+use super::{Api, utils::RequestBuilderUtils};
+use crate::json;
 use crate::cursor::Cursor;
 
 #[derive(Debug)]
@@ -9,9 +12,15 @@ pub struct CloudAction {
     pub timestamp: u64,
 }
 
-impl GeneralParsable for CloudAction {
-    type Error = ParsingCustomError;
-    fn parse(data: &GeneralParser) -> Result<Self, Self::Error> {
+#[derive(Clone, Debug, Forwarder)]
+pub enum CloudActionParseError {
+    #[forward] Event(CloudActionEventParseError),
+    #[forward] Expected(json::ExpectedError)
+}
+
+impl json::Parsable for CloudAction {
+    type Error = CloudActionParseError;
+    fn parse(data: &json::Parser) -> Result<Self, Self::Error> {
         Ok(Self {
             by_name: data.i("user").string()?,
             event: data.parse()?,
@@ -30,9 +39,15 @@ pub enum CloudActionEvent {
     },
 }
 
-impl GeneralParsable for CloudActionEvent {
-    type Error = ParsingCustomError;
-    fn parse(data: &GeneralParser) -> Result<Self, Self::Error> {
+#[derive(Debug, Clone, Forwarder)]
+pub enum CloudActionEventParseError {
+    #[forward] Expected(json::ExpectedError),
+    InvalidType(String)
+}
+
+impl json::Parsable for CloudActionEvent {
+    type Error = CloudActionEventParseError;
+    fn parse(data: &json::Parser) -> Result<Self, Self::Error> {
         Ok(match data.i("verb").str()? {
             "set_var" => Self::Set {
                 name: data.i("name").string()?,
@@ -44,15 +59,22 @@ impl GeneralParsable for CloudActionEvent {
             },
             "create_var" => Self::Create(data.i("name").string()?),
             "del_var" => Self::Delete(data.i("name").string()?),
-            _ => Err(())?
+            t => Err(CloudActionEventParseError::InvalidType(t.to_owned()))?
         })
     }
 }
 
+#[derive(Forwarder, Debug)]
+pub enum GetProjectCloudActivityError {
+    #[forward(StatusCode)]
+    This(super::Error),
+    #[forward] Parsing(CloudActionParseError)
+}
+
 impl Api {
-    pub async fn get_project_cloud_activity(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<CloudAction>> {
+    pub async fn get_project_cloud_activity(&self, id: u64, cursor: impl Into<Cursor>) -> Result<Vec<CloudAction>, GetProjectCloudActivityError> {
         let response = self.get_cloud("logs").cursor(cursor)
         .query(&[("projectid", id)]).send_success().await?;
-        response.general_parser_vec().await
+        Ok(response.json_parser_vec().await.unwrap())
     }
 }

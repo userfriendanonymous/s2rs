@@ -1,4 +1,4 @@
-use super::{Api, user::{UserProfileImages, UserHistory}, utils::{ResponseUtils, RequestBuilderUtils}, NetworkError};
+use super::{Api, user::{UserProfileImages, UserHistory}, utils::{ResponseUtils, RequestBuilderUtils}};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use crate::cursor::Cursor;
@@ -253,7 +253,7 @@ impl Api {
         if status.is_success() || status.as_u16() == 302 {
             Ok(response.bytes().await?)
         } else {
-            Err(NetworkError::Status(status))?
+            Err(status)?
         }
     }
 

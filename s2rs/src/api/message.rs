@@ -1,5 +1,8 @@
-use super::{general_parser::{GeneralParser, GeneralParsable}, Api, utils::{ResponseUtils, RequestBuilderUtils}, ParsingCustomError};
+use s2rs_derive::Forwarder;
+
+use super::{Api, utils::RequestBuilderUtils};
 use crate::cursor::Cursor;
+use crate::json;
 
 pub struct Message {
     pub id: u64,
@@ -10,9 +13,15 @@ pub struct Message {
     pub event_type: String,
 }
 
-impl GeneralParsable for Message {
-    type Error = ParsingCustomError;
-    fn parse(data: &GeneralParser) -> Result<Self, Self::Error> {
+#[derive(Forwarder)]
+pub enum MessageParseError {
+    #[forward] Expected(json::ExpectedError),
+    #[forward] Event(MessageEventParseError)
+}
+
+impl json::Parsable for Message {
+    type Error = json::ExpectedError;
+    fn parse(data: &json::Parser) -> Result<Self, Self::Error> {
         Ok(Self {
             id: data.i("id").u64()?,
             created_at: data.i("datetime_created").string()?,
@@ -28,6 +37,17 @@ pub enum MessageCommentLocation {
     Profile,
     Project,
     Studio
+}
+
+impl MessageCommentLocation {
+    pub fn from_u8(value: u8) -> Option<Self> {
+        Some(match value {
+            0 => Self::Project,
+            1 => Self::Profile,
+            2 => Self::Studio,
+            _ => None?
+        })
+    }
 }
 
 pub enum MessageEvent {
@@ -77,9 +97,16 @@ pub enum MessageEvent {
     Welcome
 }
 
-impl GeneralParsable for MessageEvent {
-    type Error = ParsingCustomError;
-    fn parse(data: &GeneralParser) -> Result<Self, Self::Error> {
+#[derive(Forwarder)]
+pub enum MessageEventParseError {
+    #[forward] Expected(json::ExpectedError),
+    #[forward] CommentLocation(u8),
+    InvalidType(String)
+}
+
+impl json::Parsable for MessageEvent {
+    type Error = MessageEventParseError;
+    fn parse(data: &json::Parser) -> Result<Self, Self::Error> {
         Ok(match data.i("type").string()?.as_str() {
             "followuser" => Self::FollowUser {
                 to_id: data.i("followed_user_id").u64()?,
@@ -102,12 +129,7 @@ impl GeneralParsable for MessageEvent {
             "addcomment" => {
                 let location_type = data.i("comment_type").u8()?;
                 Self::AddComment {
-                    location: match location_type {
-                        0 => MessageCommentLocation::Project,
-                        1 => MessageCommentLocation::Profile,
-                        2 => MessageCommentLocation::Studio,
-                        _ => Err(ParsingCustomError)?
-                    },
+                    location: MessageCommentLocation::from_u8(location_type).ok_or(MessageEventParseError::CommentLocation(location_type))?,
                     location_type,
                     location_id: data.i("comment_obj_id").u64()?,
                     location_title: data.i("comment_obj_title").string()?,
@@ -132,7 +154,7 @@ impl GeneralParsable for MessageEvent {
                 id: data.i("topic_id").u64()?,
                 title: data.i("topic_title").string()?,
             },
-            _ => Err(ParsingCustomError)?
+            t => Err(MessageEventParseError::InvalidType(t.to_owned()))?
         })
     }
 }

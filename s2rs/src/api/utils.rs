@@ -1,9 +1,9 @@
 use async_trait::async_trait;
-use reqwest::{Response, RequestBuilder};
+use reqwest::{Response, RequestBuilder, StatusCode};
 use s2rs_derive::Forwarder;
 use serde::{de::DeserializeOwned, Serialize};
-use crate::cursor::Cursor;
-use super::{NetworkError, ParsingError, general_parser::{GeneralParsable, GeneralParser}};
+use serde_json::Value;
+use crate::{cursor::Cursor, json};
 
 #[derive(Forwarder, Debug)]
 pub enum AsJsonError {
@@ -14,29 +14,29 @@ pub enum AsJsonError {
 impl From<AsJsonError> for super::Error {
     fn from(value: AsJsonError) -> Self {
         match value {
-            AsJsonError::Decoding(error) => Self::Network(NetworkError::Request(error)),
-            AsJsonError::Parsing(error) => Self::Parsing(ParsingError::Auto(error))
+            AsJsonError::Decoding(error) => Self::Network(error),
+            AsJsonError::Parsing(error) => Self::Parsing(error)
         }
     }
 }
 
 #[async_trait]
 pub trait ResponseUtils where Self: Sized {
-    fn only_success(self) -> Result<Self, NetworkError>;
+    fn only_success(self) -> Result<Self, StatusCode>;
     async fn json<'a, T: DeserializeOwned>(self) -> Result<T, AsJsonError>;
-    async fn general_parser<T: GeneralParsable>(self) -> Result<T, super::Error>
-        where super::Error: From<<T as GeneralParsable>::Error>;
-    async fn general_parser_vec<T: GeneralParsable>(self) -> Result<Vec<T>, super::Error>
-        where super::Error: From<<T as GeneralParsable>::Error>;
+    async fn json_parser<T: json::Parsable>(self) -> Result<T, super::Error>
+        where super::Error: From<<T as json::Parsable>::Error>;
+    async fn json_parser_vec<T: json::Parsable>(self) -> Result<Vec<T>, super::Error>
+        where super::Error: From<<T as json::Parsable>::Error>;
 }
 
 #[async_trait]
 impl ResponseUtils for Response {
-    fn only_success(self) -> Result<Self, NetworkError> {
+    fn only_success(self) -> Result<Self, StatusCode> {
         if self.status().is_success() {
             Ok(self)
         } else {
-            Err(NetworkError::Status(self.status()))
+            Err(self.status())
         }
     }
 
@@ -45,19 +45,19 @@ impl ResponseUtils for Response {
         Ok(serde_json::from_str::<T>(&text)?)
     }
 
-    async fn general_parser<T: GeneralParsable>(self) -> Result<T, super::Error> where super::Error: From<<T as GeneralParsable>::Error> {
-        Ok(T::parse(&self.json::<GeneralParser>().await?)?)
+    async fn json_parser<T: json::Parsable>(self) -> Result<T, super::Error> where super::Error: From<<T as json::Parsable>::Error> {
+        Ok(T::parse(&self.json::<json::Parser>().await?)?)
     }
 
-    async fn general_parser_vec<T: GeneralParsable>(self) -> Result<Vec<T>, super::Error> where super::Error: From<<T as GeneralParsable>::Error> {
-        Ok(T::parse_vec(&self.json::<Vec<GeneralParser>>().await?)?)
+    async fn json_parser_vec<T: json::Parsable>(self) -> Result<Vec<T>, T::Error>> {
+        Ok(T::parse_vec(&self.json::<Vec<json::Parser>>().await?)?)
     }
 }
 
 #[async_trait]
 pub trait RequestBuilderUtils where Self: Sized {
-    async fn send_success(self) -> Result<Response, NetworkError>;
-    async fn project_send_success(self, id: u64) -> Result<Response, NetworkError>;
+    async fn send_success(self) -> Result<Response, StatusCode>;
+    async fn project_send_success(self, id: u64) -> Result<Response, StatusCode>;
     fn cursor(self, cursor: impl Into<Cursor>) -> Self;
     fn cursor_2(self, cursor: impl Into<Cursor>) -> Self;
     fn json<T: Serialize>(self, data: T) -> Result<Self, serde_json::Error>;
@@ -66,12 +66,12 @@ pub trait RequestBuilderUtils where Self: Sized {
 
 #[async_trait]
 impl RequestBuilderUtils for RequestBuilder {
-    async fn send_success(self) -> Result<Response, NetworkError> {
+    async fn send_success(self) -> Result<Response, StatusCode> {
         let idk = self.send().await;
         idk?.only_success()
     }
 
-    async fn project_send_success(self, id: u64) -> Result<Response, NetworkError> {
+    async fn project_send_success(self, id: u64) -> Result<Response, StatusCode> {
         self.project_referer(id).send_success().await
     }
 

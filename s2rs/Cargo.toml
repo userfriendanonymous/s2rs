@@ -13,12 +13,12 @@ rss = ["time", "dep:feed-rs"]
 html = ["dep:html_parser"]
 web_socket = ["dep:tokio-tungstenite"]
 stream = []
-bytes = ["dep:bytes"]
+bytes = ["dep:bytes", "reqwest/stream"]
 all = ["rss", "html", "web_socket", "stream", "bytes"] # to be removed?
 
 [dependencies]
 s2rs-derive = "0.1.0"
-reqwest = { version = "0.11.16", features = ["cookies"] }
+reqwest = { version = "0.11.16", features = ["multipart"] }
 serde_json = "1.0.95"
 tokio = "1.27.0"
 url = "2.3.1"

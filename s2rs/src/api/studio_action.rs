@@ -1,5 +1,10 @@
-use super::{GeneralParser, ParsingCustomError, ParsingError, Api, utils::{ResponseUtils, RequestBuilderUtils}, general_parser::GeneralParsable};
+use std::str::FromStr;
+
+use s2rs_derive::Forwarder;
+
+use super::{Api, utils::RequestBuilderUtils};
 use crate::cursor::Cursor;
+use crate::json;
 
 #[derive(Debug)]
 pub struct StudioAction {
@@ -11,11 +16,24 @@ pub struct StudioAction {
     pub event_type: String,
 }
 
-impl GeneralParsable for StudioAction {
-    type Error = ParsingError;
-    fn parse(data: &GeneralParser) -> Result<Self, Self::Error> {
+#[derive(Debug, Clone, Forwarder)]
+pub enum StudioActionParseIdError {
+    NoContent,
+    Parsing(<u64 as FromStr>::Err)
+}
+
+#[derive(Forwarder, Clone, Debug)]
+pub enum StudioActionParseError {
+    #[forward(<u64 as FromStr>::Err)]
+    Id(StudioActionParseIdError),
+    #[forward] Event(StudioActionEventParseError)
+}
+
+impl json::Parsable for StudioAction {
+    type Error = StudioActionParseError;
+    fn parse(data: &json::Parser) -> Result<Self, Self::Error> {
         let id = data.i("id").string()?;
-        let id = id.split('-').last().ok_or(ParsingCustomError)?.parse().map_err(|_| ParsingCustomError)?;
+        let id = id.split('-').last().ok_or(StudioActionParseIdError::NoContent)?.parse()?;
 
         Ok(StudioAction {
             actor_name: data.i("actor_username").string()?,
@@ -47,9 +65,15 @@ pub enum StudioActionEvent {
     },
 }
 
-impl GeneralParsable for StudioActionEvent {
-    type Error = ParsingCustomError;
-    fn parse(data: &GeneralParser) -> Result<Self, Self::Error> {
+#[derive(Forwarder)]
+pub enum StudioActionEventParseError {
+    #[forward] Expected(json::ExpectedError),
+    InvalidType(String)
+}
+
+impl json::Parsable for StudioActionEvent {
+    type Error = StudioActionEventParseError;
+    fn parse(data: &json::Parser) -> Result<Self, Self::Error> {
         Ok(match data.i("type").string()?.as_str() {
             "updatestudio" => Self::Update,
             "addprojecttostudio" => Self::AddProject {
@@ -66,7 +90,7 @@ impl GeneralParsable for StudioActionEvent {
             "becomeownerstudio" => Self::Promote {
                 name: data.i("recipient_username").string()?
             },
-            _ => Err(())?
+            t => Err(StudioActionEventParseError::InvalidType(t.to_owned()))?
         })
     }
 }

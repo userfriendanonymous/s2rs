@@ -1,4 +1,7 @@
-use super::{GeneralParser, ParsingCustomError, ParsingError, Api, utils::{ResponseUtils, RequestBuilderUtils}, general_parser::GeneralParsable};
+use s2rs_derive::Forwarder;
+
+use super::{Api, utils::RequestBuilderUtils};
+use crate::json;
 use crate::cursor::Cursor;
 
 #[derive(Debug)]
@@ -11,9 +14,9 @@ pub struct FollowingAction {
     pub event_type: String,
 }
 
-impl GeneralParsable for FollowingAction {
-    type Error = ParsingError;
-    fn parse(data: &GeneralParser) -> Result<Self, Self::Error> {
+impl json::Parsable for FollowingAction {
+    type Error = json::ExpectedError;
+    fn parse(data: &json::Parser) -> Result<Self, Self::Error> {
         Ok(FollowingAction {
             actor_name: data.i("actor_username").string()?,
             actor_id: data.i("actor_id").u64()?,
@@ -66,9 +69,15 @@ pub enum FollowingActionEvent {
     }
 }
 
-impl GeneralParsable for FollowingActionEvent {
-    type Error = ParsingCustomError;
-    fn parse(data: &GeneralParser) -> Result<Self, Self::Error> {
+#[derive(Forwarder)]
+pub enum FollowingActionEventParseError {
+    InvalidEventType(String),
+    Json(json::ExpectedError)
+}
+
+impl json::Parsable for FollowingActionEvent {
+    type Error = FollowingActionEventParseError;
+    fn parse(data: &json::Parser) -> Result<Self, Self::Error> {
         Ok(match data.i("type").string()?.as_str() {
             "followuser" => Self::FollowUser {
                 to_id: data.i("followed_user_id").u64()?,
@@ -107,7 +116,7 @@ impl GeneralParsable for FollowingActionEvent {
                 to_name: data.i("recipient_username").string()?,
                 title: data.i("gallery_title").string()?,
             },
-            _ => Err(ParsingCustomError)?
+            event_type => Err(FollowingActionEventParseError::InvalidEventType(event_type.to_owned()))?
         })
     }
 }

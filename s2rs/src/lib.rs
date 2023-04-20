@@ -11,7 +11,7 @@ mod utils;
 mod cursor;
 mod cookies;
 mod headers;
-mod rss;
 mod language;
+mod json;
 #[cfg(feature = "web_socket")] mod web_socket;
 #[cfg(feature = "html")] mod html;

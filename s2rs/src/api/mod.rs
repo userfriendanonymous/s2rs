@@ -1,7 +1,6 @@
 use std::sync::Arc;
 use reqwest::{StatusCode, Client, Method, RequestBuilder};
 use s2rs_derive::Forwarder;
-use general_parser::GeneralParser;
 use crate::{cookies::Cookies, headers};
 
 pub use studio::*;
@@ -38,7 +37,6 @@ pub mod front_page;
 pub mod explore;
 pub mod search;
 mod utils;
-mod general_parser;
 
 pub mod protocols {
     pub const HTTPS: &str = "https://";
@@ -63,44 +61,10 @@ pub struct Tokens {
 pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Forwarder, Debug)]
-pub enum NetworkError {
-    #[forward] Request(reqwest::Error),
-    #[forward] Status(StatusCode),
-}
-
-#[derive(Forwarder, Debug)]
 pub enum Error {
-    #[forward(StatusCode, reqwest::Error)]
-    Network(NetworkError),
-    #[forward(serde_json::Error, ParsingCustomError)]
-    Parsing(ParsingError)
-}
-
-#[derive(Debug)]
-pub struct ParsingCustomError;
-
-impl<T> From<Option<T>> for ParsingCustomError {
-    fn from(_: Option<T>) -> Self {
-        Self
-    }
-}
-
-impl From<()> for ParsingCustomError {
-    fn from(_: ()) -> Self {
-        Self
-    }
-}
-
-impl From<ParsingCustomError> for ParsingError {
-    fn from(_: ParsingCustomError) -> Self {
-        Self::Custom
-    }
-}
-
-#[derive(Forwarder, Debug)]
-pub enum ParsingError {
-    Custom,
-    #[forward] Auto(serde_json::Error),
+    #[forward] Status(StatusCode),
+    #[forward] Network(reqwest::Error),
+    #[forward] Parsing(serde_json::Error)
 }
 
 #[derive(Debug, Forwarder)]

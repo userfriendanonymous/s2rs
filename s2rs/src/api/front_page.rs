@@ -1,6 +1,7 @@
 use serde::Deserialize;
 use crate::Api;
-use super::{utils::{RequestBuilderUtils, ResponseUtils}, general_parser::GeneralParser};
+use super::utils::{RequestBuilderUtils, ResponseUtils};
+use crate::json;
 
 #[derive(Debug, Deserialize)]
 pub struct FrontPage {
@@ -105,7 +106,7 @@ impl Api {
 
     pub async fn get_projects_count(&self) -> super::Result<u64> {
         let response = self.get("projects/count/all/").send_success().await?;
-        let data: GeneralParser = response.json::<GeneralParser>().await?;
+        let data: json::Parser = response.json().await?;
         Ok(data.i("count").u64()?)
     }
 }
