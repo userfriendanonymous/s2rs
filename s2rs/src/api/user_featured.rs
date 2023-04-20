@@ -40,6 +40,6 @@ pub struct UserFeaturedProfile {
 impl Api {
     pub async fn get_user_featured(&self, name: &str) -> super::Result<UserFeatured> {
         let response = self.get_site_api(&format!["users/all/{name}/"]).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 }

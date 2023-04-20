@@ -131,27 +131,27 @@ pub struct ProjectRemix {
 impl Api {
     pub async fn get_project_meta(&self, id: u64) -> super::Result<Project> {
         let response = self.get(&format!("projects/{id}/")).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn get_user_projects(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project3>> {
         let response = self.get(&format!("users/{name}/projects/")).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn get_user_favorites(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project3>> {
         let response = self.get(&format!("users/{name}/favorites/")).cursor_2(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn get_user_views(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
         let response = self.get(&format!("users/{name}/projects/recentlyviewed/")).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn get_project_remixes(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Project3>> {
         let response = self.get(&format!("projects/{id}/remixes/")).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn send_project_comment(&self, id: u64, content: &str, parent_id: Option<u64>, to_id: Option<u64>) -> super::Result<()> {

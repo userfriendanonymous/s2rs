@@ -132,7 +132,7 @@ pub enum GetUserMessagesCountError {
 impl Api {
     pub async fn get_user_meta(&self, name: &str) -> super::Result<User> {
         let response = self.get(&format!["users/{name}"]).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn get_user_messages_count(&self, name: &str) -> Result<u64, GetUserMessagesCountError> {
@@ -145,46 +145,46 @@ impl Api {
 
     pub async fn get_user_followers(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
         let response = self.get(&format!["users/{name}/followers/"]).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn get_user_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
         let response = self.get(&format!["users/{name}/following"]).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn get_projects_loved_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
         let response = self.get(&format!["users/{name}/following/users/loves/"]).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn get_projects_shared_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
         let response = self.get(&format!["users/{name}/following/users/projects/"]).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn get_studio_managers(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
         let response = self.get(&format!["studios/{id}/managers"]).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn get_studio_curators(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
         let response = self.get(&format!["studios/{id}/curators/"]).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn follow_user(&self, name: &str) -> super::Result<Value> {
         let response = self.put_site_api(&format!["users/followers/{name}/add/"])
         .query(&[("usernames", self.name())])
         .send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn unfollow_user(&self, name: &str) -> super::Result<Value> {
         let response = self.put_site_api(&format!["users/followers/{name}/remove/"])
         .query(&[("usernames", self.name())])
         .send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn send_user_comment(&self, name: &str, content: String, parent_id: Option<u64>, to_id: Option<u64>,) -> super::Result<()> {
@@ -212,7 +212,7 @@ impl Api {
 
     pub async fn check_user_name(&self, name: &str) -> super::Result<UserNameCheck> {
         let response = self.get(&format!["accounts/checkusername/{name}/"]).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     #[cfg(feature = "bytes")]

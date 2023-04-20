@@ -67,17 +67,17 @@ pub struct StudioInfo {
 impl Api {
     pub async fn get_studio_meta(&self, id: u64) -> super::Result<Studio> {
         let response = self.get(&format!["studios/{id}/"]).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn get_user_curating_studios(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Studio>> {
         let response = self.get(&format!["users/{name}/studios/curate/"]).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn get_project_studios(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Studio>> {
         let response = self.get(&format!["projects/{id}/studios/"]).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn add_studio_project(&self, id: u64, project_id: u64) -> super::Result<()> {

@@ -25,11 +25,11 @@ impl SearchQuery {
 impl Api {
     pub async fn search_projects(&self, query: &SearchQuery, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
         let response = self.get("search/projects/").query(&query.as_query()).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 
     pub async fn search_studios(&self, query: &SearchQuery, cursor: impl Into<Cursor>) -> super::Result<Vec<Studio2>> {
         let response = self.get("search/studios/").query(&query.as_query()).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
+        response.json().await
     }
 }
