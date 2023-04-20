@@ -1,6 +1,6 @@
 [package]
 name = "s2rs"
-version = "0.1.6"
+version = "0.1.7"
 license = "MIT"
 edition = "2021"
 description = "An intuitive Rust -> Scratch API library"
