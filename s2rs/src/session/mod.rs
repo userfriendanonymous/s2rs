@@ -1,4 +1,6 @@
 use std::sync::Arc;
+use s2rs_derive::Forwarder;
+
 use crate::{api::{Api, Tokens, self}, entities::{User, Project, Studio, Me, ForumTopic, ForumPost}};
 
 pub struct ExtensionPipe {
@@ -25,6 +27,12 @@ pub struct Session {
     me: Arc<Me>,
 }
 
+#[derive(Forwarder, Debug)]
+pub enum LoginError {
+    #[forward] This(api::Error),
+    #[forward] WithAuth(api::WithAuthError)
+}
+
 impl Session {
     pub fn extend<T: Extension>(self: &Arc<Self>) -> Arc<T> {
         T::extended(ExtensionPipe {
@@ -33,8 +41,8 @@ impl Session {
         }, self.clone())
     }
 
-    pub fn new(name: impl Into<Arc<String>>) -> Arc<Self> {
-        let name: Arc<_> = name.into();
+    pub fn new(name: impl Into<String>) -> Arc<Self> {
+        let name = Arc::new(name.into());
         let api = Api::new(name.clone());
         Arc::new(Self {
             me: Me::with_this(User::new(name, api.clone()), api.clone()),
@@ -42,13 +50,24 @@ impl Session {
         })
     }
 
-    pub fn with_auth(name: impl Into<Arc<String>>, tokens: &Tokens) -> Result<Arc<Self>, api::WithAuthError> {
-        let name: Arc<_> = name.into();
+    pub fn with_auth(name: impl Into<String>, tokens: &Tokens) -> Result<Arc<Self>, api::WithAuthError> {
+        let name = Arc::new(name.into());
         let api = Api::with_auth(name.clone(), tokens)?;
         Ok(Arc::new(Self {
             me: Me::with_this(User::new(name, api.clone()), api.clone()),
             api
         }))
+    }
+
+    pub async fn with_login(name: impl Into<String>, password: &str) -> Result<Arc<Self>, LoginError> {
+        let name: String = name.into();
+        let session = Self::new(name.clone());
+        let data = session.me().login(&name, password).await?;
+        Ok(Self::with_auth(name, &Tokens {
+            session: "".to_owned(),
+            x: data.x_token,
+            csrf: "".to_owned()
+        })?)
     }
 
     pub fn user(&self, name: impl Into<String>) -> Arc<User> {
