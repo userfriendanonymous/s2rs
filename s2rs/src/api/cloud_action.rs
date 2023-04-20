@@ -2,7 +2,7 @@ use s2rs_derive::Forwarder;
 use reqwest::StatusCode;
 use super::utils::ResponseUtils;
 use super::{Api, utils::RequestBuilderUtils};
-use crate::json;
+use crate::json::{self, Parsable};
 use crate::cursor::Cursor;
 
 #[derive(Debug)]
@@ -68,13 +68,13 @@ impl json::Parsable for CloudActionEvent {
 pub enum GetProjectCloudActivityError {
     #[forward(StatusCode)]
     This(super::Error),
-    #[forward] Parsing(CloudActionParseError)
+    #[forward] Parsing(CloudActionParseError),
 }
 
 impl Api {
     pub async fn get_project_cloud_activity(&self, id: u64, cursor: impl Into<Cursor>) -> Result<Vec<CloudAction>, GetProjectCloudActivityError> {
         let response = self.get_cloud("logs").cursor(cursor)
         .query(&[("projectid", id)]).send_success().await?;
-        Ok(response.json_parser_vec().await.unwrap())
+        Ok(CloudAction::parse_vec(&response.json::<Vec<_>>().await?)?)
     }
 }

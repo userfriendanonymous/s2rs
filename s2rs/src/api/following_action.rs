@@ -1,5 +1,5 @@
 use s2rs_derive::Forwarder;
-
+use super::utils::ResponseUtils;
 use super::{Api, utils::RequestBuilderUtils};
 use crate::json;
 use crate::cursor::Cursor;
@@ -14,8 +14,14 @@ pub struct FollowingAction {
     pub event_type: String,
 }
 
+#[derive(Forwarder, Clone, Debug)]
+pub enum FollowingActionParseError {
+    #[forward] Expected(json::ExpectedError),
+    #[forward] Event(FollowingActionEventParseError)
+}
+
 impl json::Parsable for FollowingAction {
-    type Error = json::ExpectedError;
+    type Error = FollowingActionParseError;
     fn parse(data: &json::Parser) -> Result<Self, Self::Error> {
         Ok(FollowingAction {
             actor_name: data.i("actor_username").string()?,
@@ -69,10 +75,10 @@ pub enum FollowingActionEvent {
     }
 }
 
-#[derive(Forwarder)]
+#[derive(Forwarder, Clone, Debug)]
 pub enum FollowingActionEventParseError {
     InvalidEventType(String),
-    Json(json::ExpectedError)
+    #[forward] Expected(json::ExpectedError)
 }
 
 impl json::Parsable for FollowingActionEvent {
@@ -121,9 +127,15 @@ impl json::Parsable for FollowingActionEvent {
     }
 }
 
+#[derive(Forwarder)]
+pub enum GetFollowingUsersActivity {
+    #[forward] Parsing(FollowingActionParseError),
+    #[forward] This(super::Error)
+}
+
 impl Api {
-    pub async fn get_following_users_activity(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<FollowingAction>> {
+    pub async fn get_following_users_activity(&self, name: &str, cursor: impl Into<Cursor>) -> Result<Vec<FollowingAction>, GetFollowingUsersActivity> {
         let response = self.get(&format!["users/{name}/following/users/activity/"]).cursor(cursor).send_success().await?;
-        response.general_parser_vec().await
+        response.json_parser_vec().await
     }
 }

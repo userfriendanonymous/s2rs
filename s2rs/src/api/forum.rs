@@ -59,20 +59,24 @@ pub enum ForumTopicRssParseError {
     #[forward(<u64 as FromStr>::Err)]
     Id(ForumTopicRssParseIdError),
     UpdatedAtNotFound,
+    TitleNotFound,
     #[forward] Post(ForumTopicRssPostParseError)
 }
 
 #[cfg(feature = "rss")]
 impl ForumTopicRss {
-    pub fn try_from_rss(data: feed_rs::model::Feed) -> Result<Self, json::ExpectedError> {
+    pub fn try_from_rss(data: feed_rs::model::Feed) -> Result<Self, ForumTopicRssParseError> {
+        type Error = ForumTopicRssParseError;
+        type IdError = ForumTopicRssParseIdError;
+
         let mut posts = Vec::new();
         for entry in data.entries {
             posts.push(ForumTopicRssPost::try_from_rss(entry)?);
         }
         Ok(Self {
-            id: data.id.split('/').rev().nth(1).ok_or(ForumTopicRssParseIdError::NoContent)?.parse()?,
-            title: data.title.ok_or(())?.content,
-            updated_at: data.updated.ok_or(ForumTopicRssParseError::UpdatedAtNotFound)?,
+            id: data.id.split('/').rev().nth(1).ok_or(IdError::NoContent)?.parse().map_err(IdError::Parsing)?,
+            title: data.title.ok_or(Error::TitleNotFound)?.content,
+            updated_at: data.updated.ok_or(Error::UpdatedAtNotFound)?,
             posts
         })
     }
@@ -88,13 +92,13 @@ pub struct ForumTopicRssPost {
     pub content: String,
 }
 
-#[derive(Forwarder, Debug)]
+#[derive(Forwarder, Debug, Clone)]
 pub enum ForumTopicRssPostParseError {
     #[forward] Expected(json::ExpectedError),
     Id(<u64 as FromStr>::Err),
     AuthorNotFound,
     ContentNotFound,
-    CreatedAtNotFound
+    CreatedAtNotFound,
 }
 
 #[cfg(feature = "rss")]
@@ -107,7 +111,7 @@ impl ForumTopicRssPost {
             author_name: data.authors.swap_remove(0).name,
             content: data.summary.ok_or(ForumTopicRssPostParseError::ContentNotFound)?.content,
             created_at: data.published.ok_or(ForumTopicRssPostParseError::CreatedAtNotFound)?,
-            id: data.id.parse()?
+            id: data.id.parse().map_err(ForumTopicRssPostParseError::Id)?
         })
     }
 }
@@ -117,7 +121,7 @@ impl ForumTopicRssPost {
 pub enum GetForumTopicRssError {
     #[forward] Parsing(ForumTopicRssParseError),
     #[forward] Rss(feed_rs::parser::ParseFeedError),
-    #[forward()]
+    #[forward(reqwest::Error)]
     This(super::Error)
 }
 
