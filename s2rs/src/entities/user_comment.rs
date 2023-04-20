@@ -1,3 +1,4 @@
+use derivative::Derivative;
 use s2rs_derive::deref;
 use crate::api::{self, CommentContent};
 use super::{Api, UserWithId, User};
@@ -38,22 +39,31 @@ pub enum EmojiVariant {
 }
 
 // region: UserComment
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Derivative)]
+#[derivative(Debug, PartialEq, Eq)]
 pub struct UserComment {
     pub id: u64,
-    pub profile: Arc<User>
+    #[derivative(PartialEq = "ignore")]
+    pub profile: Arc<User>,
+    #[derivative(Debug = "ignore", PartialEq = "ignore")]
+    pub api: Arc<Api>,
 }
 
 impl UserComment {
-    pub fn with_profile(id: u64, profile: Arc<User>) -> Arc<Self> {
+    pub fn with_profile(id: u64, profile: Arc<User>, api: Arc<Api>) -> Arc<Self> {
         Arc::new(Self {
             id,
-            profile
+            profile,
+            api
         })
     }
 
     pub fn new(id: u64, user_name: String, api: Arc<Api>) -> Arc<Self> {
-        Self::with_profile(id, User::new(user_name, api))
+        Self::with_profile(id, User::new(user_name, api.clone()), api)
+    }
+
+    pub async fn report(&self) -> api::Result<()> {
+        self.api.report_user_comment(self.id).await
     }
 }
 // endregion: UserComment
@@ -84,7 +94,7 @@ impl UserCommentMeta {
 
     pub fn with_profile(data: api::UserComment, profile: Arc<User>, api: Arc<Api>) -> Arc<Self> {
         let id = data.id;
-        Self::with_this(data, UserComment::with_profile(id, profile), api)
+        Self::with_this(data, UserComment::with_profile(id, profile, api.clone()), api)
     }
 
     pub fn vec_with_profile(data: Vec<api::UserComment>, profile: Arc<User>, api: Arc<Api>) -> Vec<Arc<Self>> {

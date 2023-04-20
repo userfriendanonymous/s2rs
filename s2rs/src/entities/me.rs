@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use crate::{Api, api::{UserInfo, FeaturedLabel, self}};
-use super::{User, FrontPage};
+use super::{User, FrontPage, Login};
 use derivative::Derivative;
 use s2rs_derive::deref;
 
@@ -56,5 +56,9 @@ impl Me {
     pub async fn set_icon<B>(&self, buffer: B) -> api::Result<()>
     where B: Into<std::borrow::Cow<'static, [u8]>> {
         self.api.set_user_icon(buffer).await
+    }
+
+    pub async fn login(&self, name: &str, password: &str) -> api::Result<Login> {
+        Ok(Login::new(self.api.login(name, password).await?, self.api.clone()))
     }
 }

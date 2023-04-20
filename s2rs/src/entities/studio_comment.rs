@@ -1,22 +1,31 @@
 use std::sync::Arc;
+use derivative::Derivative;
 use s2rs_derive::deref;
 
-use crate::api::{self, Api};
+use crate::{api::{self, Api}, StudioCommentReplies, stream::GeneralStream, cursor::Cursor};
 use super::{Studio, CommentAuthor};
 
 // region: StudioComment
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub struct StudioComment {
     pub id: u64,
     pub at: Arc<Studio>,
+    #[derivative(Debug = "ignore")]
+    pub api: Arc<Api>
 }
 
 impl StudioComment {
-    pub fn with_at(id: u64, at: Arc<Studio>) -> Arc<Self> {
+    pub fn with_at(id: u64, at: Arc<Studio>, api: Arc<Api>) -> Arc<Self> {
         Arc::new(Self {
             at,
-            id
+            id,
+            api
         })
+    }
+
+    pub async fn replies(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<StudioCommentReplies> {
+        GeneralStream::with_this(StudioCommentReplies, cursor.into(), self.clone(), self.api.clone())
     }
 }
 // endregion: StudioComment
@@ -38,11 +47,11 @@ pub struct StudioCommentMeta {
 impl StudioCommentMeta {
     pub fn with_this(data: api::Comment, this: Arc<StudioComment>, at: Arc<Studio>, api: Arc<Api>) -> Arc<Self> {
         Arc::new(Self {
-            author: CommentAuthor::new(data.author, api),
             content: data.content,
             created_at: data.created_at,
             modified_at: data.modified_at,
-            parent: data.parent_id.map(|parent_id| StudioComment::with_at(parent_id, at)),
+            parent: data.parent_id.map(|parent_id| StudioComment::with_at(parent_id, at, api.clone())),
+            author: CommentAuthor::new(data.author, api),
             reply_count: data.reply_count,
             to_user_id: data.to_user_id,
             this,
@@ -51,7 +60,7 @@ impl StudioCommentMeta {
 
     pub fn new(data: api::Comment, at: Arc<Studio>, api: Arc<Api>) -> Arc<Self> {
         let id = data.id;
-        Self::with_this(data, StudioComment::with_at(id, at.clone()), at, api)
+        Self::with_this(data, StudioComment::with_at(id, at.clone(), api.clone()), at, api)
     }
 
     pub fn vec_new(data: Vec<api::Comment>, at: Arc<Studio>, api: Arc<Api>) -> Vec<Arc<Self>> {

@@ -1,6 +1,7 @@
 use std::sync::Arc;
+use derivative::Derivative;
 use s2rs_derive::deref;
-use crate::api::{self, Api};
+use crate::{api::{self, Api}, stream::GeneralStream, ProjectCommentReplies, cursor::Cursor};
 use super::{UserWithId, Project};
 
 // region: CommentAuthor
@@ -24,18 +25,26 @@ impl CommentAuthor {
 // endregion: CommentAuthor
 
 // region: ProjectComment
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub struct ProjectComment {
     pub id: u64,
     pub at: Arc<Project>,
+    #[derivative(Debug = "ignore")]
+    api: Arc<Api>,
 }
 
 impl ProjectComment {
-    pub fn with_at(id: u64, at: Arc<Project>) -> Arc<Self> {
+    pub fn with_at(id: u64, at: Arc<Project>, api: Arc<Api>) -> Arc<Self> {
         Arc::new(Self {
             at,
-            id
+            id,
+            api
         })
+    }
+
+    pub async fn replies(self: Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<ProjectCommentReplies> {
+        GeneralStream::with_this(ProjectCommentReplies, cursor.into(), self.clone(), self.api.clone())
     }
 }
 // endregion: ProjectComment
@@ -57,11 +66,11 @@ pub struct ProjectCommentMeta {
 impl ProjectCommentMeta {
     pub fn with_this(data: api::Comment, this: Arc<ProjectComment>, at: Arc<Project>, api: Arc<Api>) -> Arc<Self> {
         Arc::new(Self {
-            author: CommentAuthor::new(data.author, api),
             content: data.content,
             created_at: data.created_at,
             modified_at: data.modified_at,
-            parent: data.parent_id.map(|parent_id| ProjectComment::with_at(parent_id, at)),
+            parent: data.parent_id.map(|parent_id| ProjectComment::with_at(parent_id, at, api.clone())),
+            author: CommentAuthor::new(data.author, api),
             reply_count: data.reply_count,
             to_user_id: data.to_user_id,
             this,
@@ -70,7 +79,7 @@ impl ProjectCommentMeta {
 
     pub fn new(data: api::Comment, at: Arc<Project>, api: Arc<Api>) -> Arc<Self> {
         let id = data.id;
-        Self::with_this(data, ProjectComment::with_at(id, at.clone()), at, api)
+        Self::with_this(data, ProjectComment::with_at(id, at.clone(), api.clone()), at, api)
     }
 
     pub fn vec_new(data: Vec<api::Comment>, at: Arc<Project>, api: Arc<Api>) -> Vec<Arc<Self>> {

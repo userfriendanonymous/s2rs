@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use crate::StudioComment;
 use crate::api::{self, Api};
 use crate::cursor::Cursor;
 use super::{stream::{GeneralStreamGen, GeneralStreamResult}, UserMeta, Studio, StudioProject, StudioCommentMeta, StudioAction};
@@ -51,6 +52,18 @@ use async_trait::async_trait;
     }
 }
 // endregion: StudioComments
+
+// region: StudioCommentReplies
+#[derive(Clone)] pub struct StudioCommentReplies;
+#[async_trait] impl GeneralStreamGen for StudioCommentReplies {
+    type Data = StudioCommentMeta;
+    type Error = api::Error;
+    type This = StudioComment;
+    async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
+        Ok(StudioCommentMeta::vec_new(api.get_studio_comment_replies(this.at.id, this.id, cursor).await?, this.at.clone(), api.clone()))
+    }
+}
+// endregion: StudioCommentReplies
 
 // region: StudioActivity
 #[derive(Clone)] pub struct StudioActivity;

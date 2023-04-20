@@ -18,6 +18,7 @@ pub use front_page::*;
 pub use explore::*;
 pub use search::*;
 pub use forum::*;
+pub use login::*;
 
 pub mod user;
 pub mod project;
@@ -36,6 +37,7 @@ pub mod user_featured;
 pub mod front_page;
 pub mod explore;
 pub mod search;
+pub mod login;
 mod utils;
 
 pub mod protocols {
@@ -180,8 +182,14 @@ impl Api {
     // endregion: api
 
     // region: base
+    fn request_base(&self, method: Method, path: &str) -> RequestBuilder {
+        self.https_request(method, &format!["{}{path}", domains::BASE])
+    }
     fn get_base(&self, path: &str) -> RequestBuilder {
-        self.https_request(Method::GET, &format!["{}{path}", domains::BASE])
+        self.request_base(Method::GET, path)
+    }
+    fn post_base(&self, path: &str) -> RequestBuilder {
+        self.request_base(Method::POST, path)
     }
     // endregion: base
 

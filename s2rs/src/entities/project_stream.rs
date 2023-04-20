@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use crate::ProjectComment;
 use crate::api::{self, Api};
 use crate::cursor::Cursor;
 use super::{stream::{GeneralStreamGen, GeneralStreamResult}, Project, Project3, ProjectCommentMeta, CloudAction};
@@ -27,6 +28,18 @@ use async_trait::async_trait;
     }
 }
 // endregion: ProjectComments
+
+// region: ProjectCommentReplies
+#[derive(Clone)] pub struct ProjectCommentReplies;
+#[async_trait] impl GeneralStreamGen for ProjectCommentReplies {
+    type Data = ProjectCommentMeta;
+    type Error = api::Error;
+    type This = ProjectComment;
+    async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
+        Ok(ProjectCommentMeta::vec_new(api.get_project_comment_replies(this.at.id, this.id, cursor).await?, this.at.clone(), api.clone()))
+    }
+}
+// endregion: ProjectCommentReplies
 
 // region: ProjectCloudActivity
 #[derive(Clone)] pub struct ProjectCloudActivity;
