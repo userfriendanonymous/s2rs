@@ -539,6 +539,16 @@ impl Studio {
             title: None
         }).await
     }
+
+    pub async fn thumbnail(&self, width: u16, height: u16) -> api::Result<Vec<u8>> {
+        self.api.get_studio_thumbnail(self.id, width, height).await
+    }
+
+    #[cfg(feature = "file")]
+    pub async fn set_thumbnail<B>(&self, buffer: B) -> api::Result<()>
+    where B: Into<std::borrow::Cow<'static, [u8]>> {
+        self.api.set_studio_thumbnail(self.id, buffer).await
+    }
 }
 // endregion: Studio
 

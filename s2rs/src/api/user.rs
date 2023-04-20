@@ -214,12 +214,11 @@ impl Api {
         response.json().await
     }
 
-    #[cfg(feature = "bytes")]
-    pub async fn get_user_icon(&self, id: u64, width: u16, height: u16) -> super::Result<bytes::Bytes> {
+    pub async fn get_user_icon(&self, id: u64, width: u16, height: u16) -> super::Result<Vec<u8>> {
         let response = self.get_uploads(&format!["get_image/user/{id}_{width}x{height}.png"]).send().await?;
         let status = response.status();
         if status.is_success() || status.as_u16() == 302 {
-            Ok(response.bytes().await?)
+            Ok(response.bytes().await?.into())
         } else {
             Err(status)?
         }
@@ -232,8 +231,7 @@ impl Api {
 
         let form = Form::new()
         .part("file", Part::bytes(buffer).file_name(""));
-        let response = self.post_site_api(&format!["users/all/{}/", &self.name]).multipart(form).send_success().await?;
-        dbg![ response.json::<Value>().await.unwrap().to_string() ];
+        let _ = self.post_site_api(&format!["users/all/{}/", &self.name]).multipart(form).send_success().await?;
         Ok(())
     }
 }

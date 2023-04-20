@@ -167,4 +167,25 @@ impl Api {
         .send_success().await?;
         Ok(())
     }
+
+    pub async fn get_studio_thumbnail(&self, id: u64, width: u16, height: u16) -> super::Result<Vec<u8>> {
+        let response = self.get_uploads(&format!["get_image/gallery/{id}_{width}x{height}.png"]).send().await?;
+        let status = response.status();
+        if status.is_success() || status.as_u16() == 302 {
+            Ok(response.bytes().await?.into())
+        } else {
+            Err(status)?
+        }
+    }
+
+    #[cfg(feature = "file")]
+    pub async fn set_studio_thumbnail<B>(&self, id: u64, buffer: B) -> super::Result<()>
+    where B: Into<std::borrow::Cow<'static, [u8]>> {
+        use reqwest::multipart::{Form, Part};
+
+        let form = Form::new()
+        .part("file", Part::bytes(buffer).file_name(""));
+        let _ = self.post_site_api(&format!["galleries/all/{id}/"]).multipart(form).send_success().await?;
+        Ok(())
+    }
 }
