@@ -117,6 +117,7 @@ impl ForumTopicRssPost {
 }
 // endregion: ForumTopicRssPost
 
+#[cfg(feature = "rss")]
 #[derive(Forwarder, Debug)]
 pub enum GetForumTopicRssError {
     #[forward] Parsing(ForumTopicRssParseError),

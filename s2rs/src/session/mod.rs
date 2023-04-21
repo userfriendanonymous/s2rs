@@ -27,6 +27,8 @@ pub struct Session {
     me: Arc<Me>,
 }
 
+
+#[cfg(feature = "cookie")]
 #[derive(Forwarder, Debug)]
 pub enum LoginError {
     #[forward] This(api::LoginError),

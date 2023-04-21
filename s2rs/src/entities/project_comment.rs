@@ -1,8 +1,9 @@
 use std::sync::Arc;
 use derivative::Derivative;
 use s2rs_derive::deref;
-use crate::{api::{self, Api}, stream::GeneralStream, ProjectCommentReplies, cursor::Cursor};
+use crate::{api::{self, Api}, cursor::Cursor};
 use super::{UserWithId, Project};
+#[cfg(feature = "stream")] use super::{stream::GeneralStream, ProjectCommentReplies};
 
 // region: CommentAuthor
 #[derive(Debug)]
