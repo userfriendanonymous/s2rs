@@ -7,7 +7,6 @@ description = "An intuitive Rust -> Scratch API library"
 repository = "https://github.com/userfriendanonymous/s2rs/"
 
 [features]
-default = ["all"] # to be removed?
 time = ["dep:chrono"]
 rss = ["time", "dep:feed-rs"]
 html = ["dep:html_parser"]
@@ -15,7 +14,7 @@ web_socket = ["dep:tokio-tungstenite"]
 stream = []
 cookie = ["dep:basic-cookies"]
 file = ["reqwest/multipart"]
-all = ["rss", "html", "web_socket", "stream", "bytes", "file"] # to be removed?
+# all = ["rss", "html", "web_socket", "stream", "bytes", "file"] # to be removed?
 
 [dependencies]
 s2rs-derive = "0.1.0"

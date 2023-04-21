@@ -7,7 +7,7 @@ edition = "2021"
 async-trait = "0.1.68"
 derivative = "2.2.0"
 reqwest = "0.11.16"
-s2rs = { version = "0.1.5", path = "../s2rs", features = [] }
+s2rs = { version = "0.2.8", path = "../s2rs", features = [] }
 s2rs-derive = { version = "0.1.0", path = "../s2rs-derive" }
 serde = "1.0.160"
 serde_json = "1.0.96"

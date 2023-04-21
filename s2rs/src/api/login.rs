@@ -56,6 +56,7 @@ impl Login {
     }
 }
 
+#[cfg(feature = "cookie")]
 #[derive(Debug, Forwarder)]
 pub enum LoginError {
     #[forward(serde_json::Error, reqwest::Error)]
