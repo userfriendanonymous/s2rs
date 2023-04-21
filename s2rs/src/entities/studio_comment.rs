@@ -25,6 +25,7 @@ impl StudioComment {
         })
     }
 
+    #[cfg(feature = "stream")]
     pub async fn replies(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<StudioCommentReplies> {
         GeneralStream::with_this(StudioCommentReplies, cursor.into(), self.clone(), self.api.clone())
     }

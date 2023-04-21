@@ -44,6 +44,7 @@ impl ProjectComment {
         })
     }
 
+    #[cfg(feature = "stream")]
     pub async fn replies(self: Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<ProjectCommentReplies> {
         GeneralStream::with_this(ProjectCommentReplies, cursor.into(), self.clone(), self.api.clone())
     }
