@@ -76,6 +76,10 @@ impl ForumTopic {
     pub async fn rss(self: &Arc<Self>) -> Result<ForumTopicRss, api::GetForumTopicRssError> {
         Ok(ForumTopicRss::with_this(self.api.forum_topic_rss(self.id).await?, self.clone(), self.api.clone()))
     }
+
+    pub async fn send_post(&self, content: &str) -> api::Result<()> {
+        self.api.send_forum_post(self.id, content).await
+    }
 }
 // endregion: ForumTopic
 

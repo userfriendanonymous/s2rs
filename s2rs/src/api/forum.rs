@@ -5,6 +5,11 @@ use super::utils::RequestBuilderUtils;
 use s2rs_derive::Forwarder;
 use serde_json::json;
 
+// https://scratch.mit.edu/discuss/topic/679418/?
+// POST
+//csrfmiddlewaretoken: l17jStNEFAwKACjhCAUdYB5MFJqx0BKm
+// body: Very Advanced Post. [small][i](sorry I need to make a single meaningless post, only one I promise!)[/i][/small]
+
 // region: ForumCategory
 pub enum ForumCategory {
     Announcements,
@@ -141,6 +146,19 @@ impl Api {
 
     pub async fn edit_forum_post(&self, id: u64, content: &str) -> super::Result<()> {
         let response = self.post_base(&format!["discuss/post/{id}/edit/"]).json(json!({
+            "csrfmiddlewaretoken": "a",
+            "body": content
+        }))?.send().await?;
+
+        let status = response.status();
+        if !status.is_success() && status.as_u16() != 302 {
+            Err(status)?
+        }
+        Ok(())
+    }
+
+    pub async fn send_forum_post(&self, id: u64, content: &str) -> super::Result<()> {
+        let response = self.post_base(&format!["discuss/post/{id}/?"]).json(json!({
             "csrfmiddlewaretoken": "a",
             "body": content
         }))?.send().await?;
