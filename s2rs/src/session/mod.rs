@@ -29,7 +29,7 @@ pub struct Session {
 
 #[derive(Forwarder, Debug)]
 pub enum LoginError {
-    #[forward] This(api::Error),
+    #[forward] This(api::LoginError),
     #[forward] WithAuth(api::WithAuthError)
 }
 
@@ -59,6 +59,7 @@ impl Session {
         }))
     }
 
+    #[cfg(feature = "cookie")]
     pub async fn with_login(name: impl Into<String>, password: &str) -> Result<Arc<Self>, LoginError> {
         let name: String = name.into();
         let session = Self::new(name.clone());

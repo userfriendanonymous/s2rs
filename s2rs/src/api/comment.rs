@@ -28,22 +28,22 @@ pub struct CommentAuthor {
 }
 
 impl Api {
-    pub async fn get_project_comments(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
+    pub async fn project_comments(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
         let response = self.get(&format!("comments/project/{id}")).cursor(cursor).send_success().await?;
         response.json().await
     }
 
-    pub async fn get_project_comment_replies(&self, id: u64, comment_id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
+    pub async fn project_comment_replies(&self, id: u64, comment_id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
         let response = self.get(&format!("comments/project/{id}/{comment_id}")).cursor(cursor).send_success().await?;
         response.json().await
     }
 
-    pub async fn get_studio_comments(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
+    pub async fn studio_comments(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
         let response = self.get(&format!("studios/{id}/comments/")).cursor(cursor).send_success().await?;
         response.json().await
     }
 
-    pub async fn get_studio_comment_replies(&self, id: u64, comment_id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
+    pub async fn studio_comment_replies(&self, id: u64, comment_id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
         let response = self.get(&format!("studios/{id}/comments/{comment_id}/")).cursor(cursor).send_success().await?;
         response.json().await
     }

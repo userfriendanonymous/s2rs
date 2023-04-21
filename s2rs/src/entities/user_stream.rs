@@ -12,7 +12,7 @@ use crate::cursor::Cursor;
     type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(Project3::vec_new(api.get_user_projects(&this.name, cursor).await?, api.clone()))
+        Ok(Project3::vec_new(api.user_projects(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserProjects
@@ -24,7 +24,7 @@ use crate::cursor::Cursor;
     type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(Project3::vec_new(api.get_user_favorites(&this.name, cursor).await?, api.clone()))
+        Ok(Project3::vec_new(api.user_favorites(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserFavorites
@@ -36,7 +36,7 @@ use crate::cursor::Cursor;
     type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(StudioMeta::vec_new(api.get_user_curating_studios(&this.name, cursor).await?, api.clone()))
+        Ok(StudioMeta::vec_new(api.user_curating_studios(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserCuratingStudios
@@ -48,7 +48,7 @@ use crate::cursor::Cursor;
     type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(UserMeta::vec_new(api.get_user_followers(&this.name, cursor).await?, api.clone()))
+        Ok(UserMeta::vec_new(api.user_followers(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserFollowers
@@ -60,7 +60,7 @@ use crate::cursor::Cursor;
     type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(UserMeta::vec_new(api.get_user_following(&this.name, cursor).await?, api.clone()))
+        Ok(UserMeta::vec_new(api.user_following(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserFollowing
@@ -72,7 +72,7 @@ use crate::cursor::Cursor;
     type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(Project2::vec_new(api.get_projects_loved_by_following(&this.name, cursor).await?, api.clone()))
+        Ok(Project2::vec_new(api.projects_loved_by_following(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserProjectsLovedByFollowing
@@ -84,7 +84,7 @@ use crate::cursor::Cursor;
     type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(Project2::vec_new(api.get_projects_loved_by_following(&this.name, cursor).await?, api.clone()))
+        Ok(Project2::vec_new(api.projects_loved_by_following(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserViews
@@ -96,7 +96,7 @@ use crate::cursor::Cursor;
     type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(Project2::vec_new(api.get_projects_shared_by_following(&this.name, cursor).await?, api.clone()))
+        Ok(Project2::vec_new(api.projects_shared_by_following(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserProjectsSharedByFollowing
@@ -108,7 +108,7 @@ use crate::cursor::Cursor;
     type Error = api::Error;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(UserMeta::vec_new(api.get_user_following(&this.name, cursor).await?, api.clone()))
+        Ok(UserMeta::vec_new(api.user_following(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserMessages
@@ -120,7 +120,7 @@ use crate::cursor::Cursor;
     type Error = api::GetFollowingUsersActivity;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(FollowingAction::vec_new(api.get_following_users_activity(&this.name, cursor).await?, api.clone()))
+        Ok(FollowingAction::vec_new(api.following_users_activity(&this.name, cursor).await?, api.clone()))
     }
 }
 // endregion: UserFollowingActivity
@@ -134,7 +134,7 @@ use crate::cursor::Cursor;
     type Error = api::GetUserCommentsError;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(UserCommentMeta::vec_with_profile(api.get_user_comments(&this.name, cursor).await?, this.clone(), api.clone()))
+        Ok(UserCommentMeta::vec_with_profile(api.user_comments(&this.name, cursor).await?, this.clone(), api.clone()))
     }
 }
 // endregion: UserComments

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use crate::{Api, api::{UserInfo, FeaturedLabel, self}};
-use super::{User, FrontPage, Login};
+use super::{User, FrontPage};
 use derivative::Derivative;
 use s2rs_derive::deref;
 
@@ -41,15 +41,15 @@ impl Me {
     }
 
     pub async fn front_page(&self) -> api::Result<FrontPage> {
-        Ok(FrontPage::new(self.api.get_front_page().await?, self.api.clone()))
+        Ok(FrontPage::new(self.api.front_page().await?, self.api.clone()))
     }
 
     pub async fn news(&self) -> api::Result<Vec<api::News>> {
-        self.api.get_news().await
+        self.api.news().await
     }
 
     pub async fn global_projects_count(&self) -> Result<u64, api::GetProjectsCountError> {
-        self.api.get_projects_count().await
+        self.api.projects_count().await
     }
 
     #[cfg(feature = "file")]
@@ -58,7 +58,8 @@ impl Me {
         self.api.set_user_icon(buffer).await
     }
 
-    pub async fn login(&self, name: &str, password: &str) -> api::Result<Login> {
-        Ok(Login::new(self.api.login(name, password).await?, self.api.clone()))
+    #[cfg(feature = "cookie")]
+    pub async fn login(&self, name: &str, password: &str) -> Result<super::Login, api::LoginError> {
+        Ok(super::Login::new(self.api.login(name, password).await?, self.api.clone()))
     }
 }

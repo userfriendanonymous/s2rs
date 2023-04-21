@@ -223,7 +223,7 @@ impl Studio {
     /// # })
     /// ```
     pub async fn meta(self: &Arc<Self>) -> Result<Arc<StudioMeta>, api::Error> {
-        Ok(StudioMeta::with_this_this(self.api.get_studio_meta(self.id).await?, self.clone()))
+        Ok(StudioMeta::with_this_this(self.api.studio_meta(self.id).await?, self.clone()))
     }
 
     /// Get studio curators
@@ -541,7 +541,7 @@ impl Studio {
     }
 
     pub async fn thumbnail(&self, width: u16, height: u16) -> api::Result<Vec<u8>> {
-        self.api.get_studio_thumbnail(self.id, width, height).await
+        self.api.studio_thumbnail(self.id, width, height).await
     }
 
     #[cfg(feature = "file")]

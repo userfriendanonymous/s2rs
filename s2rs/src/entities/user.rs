@@ -120,15 +120,15 @@ impl User {
 
 impl User {
     pub async fn meta(self: &Arc<Self>) -> Result<Arc<UserMeta>, api::Error> {
-        Ok(UserMeta::with_this_this(self.api.get_user_meta(&self.name).await?, self.clone()))
+        Ok(UserMeta::with_this_this(self.api.user_meta(&self.name).await?, self.clone()))
     }
 
     pub async fn message_count(&self) -> Result<u64, api::GetUserMessagesCountError> {
-        self.api.get_user_messages_count(&self.name).await
+        self.api.user_messages_count(&self.name).await
     }
 
     pub async fn featured(self: &Arc<Self>) -> Result<UserFeatured, api::Error> {
-        Ok(UserFeatured::with_profile_this(self.api.get_user_featured(&self.name).await?, self.clone(), self.api.clone()))
+        Ok(UserFeatured::with_profile_this(self.api.user_featured(&self.name).await?, self.clone(), self.api.clone()))
     }
 
     #[cfg(feature = "stream")]

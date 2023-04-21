@@ -161,7 +161,7 @@ pub enum GetUserCommentsError {
 
 impl Api {
     #[cfg(feature = "html")]
-    pub async fn get_user_comments(&self, name: &str, cursor: impl Into<Cursor>) -> Result<Vec<UserComment>, GetUserCommentsError> {
+    pub async fn user_comments(&self, name: &str, cursor: impl Into<Cursor>) -> Result<Vec<UserComment>, GetUserCommentsError> {
         let response = self.get_site_api(&format!["comments/user/{name}/"]).cursor(cursor).send_success().await?;
         let data = response.text().await?;
 

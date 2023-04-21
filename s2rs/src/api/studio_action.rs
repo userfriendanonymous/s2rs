@@ -102,7 +102,7 @@ pub enum GetStudioActivityError {
 }
 
 impl Api {
-    pub async fn get_studio_activity(&self, id: u64, cursor: impl Into<Cursor>) -> Result<Vec<StudioAction>, GetStudioActivityError> {
+    pub async fn studio_activity(&self, id: u64, cursor: impl Into<Cursor>) -> Result<Vec<StudioAction>, GetStudioActivityError> {
         let response = self.get(&format!["studios/{id}/activity/"]).cursor(cursor).send_success().await?;
         response.json_parser_vec().await
     }

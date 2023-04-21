@@ -101,17 +101,17 @@ pub enum GetProjectsCountError {
 }
 
 impl Api {
-    pub async fn get_front_page(&self) -> super::Result<FrontPage> {
+    pub async fn front_page(&self) -> super::Result<FrontPage> {
         let response = self.get_proxy("featured/").send_success().await?;
         response.json().await
     }
 
-    pub async fn get_news(&self) -> super::Result<Vec<News>> {
+    pub async fn news(&self) -> super::Result<Vec<News>> {
         let response = self.get("news").send_success().await?;
         response.json().await
     }
 
-    pub async fn get_projects_count(&self) -> Result<u64, GetProjectsCountError> {
+    pub async fn projects_count(&self) -> Result<u64, GetProjectsCountError> {
         let response = self.get("projects/count/all/").send_success().await?;
         let data: json::Parser = response.json().await?;
         Ok(data.i("count").u64()?)

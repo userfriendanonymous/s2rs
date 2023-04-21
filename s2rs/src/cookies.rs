@@ -2,13 +2,24 @@ use std::collections::HashMap;
 
 // region: Cookie
 pub struct Cookie {
-    pub value: String
+    pub value: String,
+}
+
+impl Cookie {
+    #[cfg(feature = "cookie")]
+    pub fn from_header(header: &str, find_name: &str) -> Option<Self> {
+        let (_, value) = simple_cookie::parse_cookie_header_value(header.as_bytes())
+        .find(|(name, _)| *name == find_name)?;
+        Some(Self {
+            value: String::from_utf8_lossy(value).to_string()
+        })
+    }
 }
 
 impl From<&str> for Cookie {
     fn from(value: &str) -> Self {
         Self {
-            value: value.to_owned()
+            value: value.to_owned(),
         }
     }
 }
@@ -25,8 +36,6 @@ impl From<Cookie> for String {
 pub struct Cookies(HashMap<String, Cookie>);
 
 impl Cookies {
-
-
     pub fn add(&mut self, name: impl Into<String>, cookie: impl Into<Cookie>) {
         self.0.insert(name.into(), cookie.into());
     }

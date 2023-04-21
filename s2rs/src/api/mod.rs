@@ -188,6 +188,7 @@ impl Api {
     fn get_base(&self, path: &str) -> RequestBuilder {
         self.request_base(Method::GET, path)
     }
+    #[cfg(feature = "cookie")]
     fn post_base(&self, path: &str) -> RequestBuilder {
         self.request_base(Method::POST, path)
     }

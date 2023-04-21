@@ -172,7 +172,7 @@ pub enum GetUserMessagesError {
 }
 
 impl Api {
-    pub async fn get_user_messages(&self, name: &str, cursor: impl Into<Cursor>) -> Result<Vec<Message>, GetUserMessagesError> {
+    pub async fn user_messages(&self, name: &str, cursor: impl Into<Cursor>) -> Result<Vec<Message>, GetUserMessagesError> {
         let response = self.get(&format!["users/{name}/messages/"]).cursor(cursor).send_success().await?;
         response.json_parser_vec().await
     }

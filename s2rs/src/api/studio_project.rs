@@ -15,7 +15,7 @@ pub struct StudioProject {
 }
 
 impl Api {
-    pub async fn get_studio_projects(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<StudioProject>> {
+    pub async fn studio_projects(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<StudioProject>> {
         let response = self.get(&format!["studios/{id}/projects"]).cursor(cursor).send_success().await?;
         response.json().await
     }

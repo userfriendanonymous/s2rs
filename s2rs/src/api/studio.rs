@@ -65,17 +65,17 @@ pub struct StudioInfo {
 }
 
 impl Api {
-    pub async fn get_studio_meta(&self, id: u64) -> super::Result<Studio> {
+    pub async fn studio_meta(&self, id: u64) -> super::Result<Studio> {
         let response = self.get(&format!["studios/{id}/"]).send_success().await?;
         response.json().await
     }
 
-    pub async fn get_user_curating_studios(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Studio>> {
+    pub async fn user_curating_studios(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Studio>> {
         let response = self.get(&format!["users/{name}/studios/curate/"]).cursor(cursor).send_success().await?;
         response.json().await
     }
 
-    pub async fn get_project_studios(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Studio>> {
+    pub async fn project_studios(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Studio>> {
         let response = self.get(&format!["projects/{id}/studios/"]).cursor(cursor).send_success().await?;
         response.json().await
     }
@@ -168,7 +168,7 @@ impl Api {
         Ok(())
     }
 
-    pub async fn get_studio_thumbnail(&self, id: u64, width: u16, height: u16) -> super::Result<Vec<u8>> {
+    pub async fn studio_thumbnail(&self, id: u64, width: u16, height: u16) -> super::Result<Vec<u8>> {
         let response = self.get_uploads(&format!["get_image/gallery/{id}_{width}x{height}.png"]).send().await?;
         let status = response.status();
         if status.is_success() || status.as_u16() == 302 {

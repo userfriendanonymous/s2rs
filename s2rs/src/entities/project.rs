@@ -359,7 +359,7 @@ impl Project {
 
 impl Project {
     pub async fn meta(self: &Arc<Self>) -> Result<Arc<ProjectMeta>, api::Error> {
-        Ok(ProjectMeta::with_this_this_this(self.api.get_project_meta(self.id).await?, self.clone(), self.api.clone()))
+        Ok(ProjectMeta::with_this_this_this(self.api.project_meta(self.id).await?, self.clone(), self.api.clone()))
     }
 
     #[cfg(feature = "stream")]
@@ -379,7 +379,7 @@ impl Project {
 
     #[cfg(feature = "web_socket")]
     pub async fn cloud(self: &Arc<Self>, id: u64) -> Result<Arc<Cloud>, tokio_tungstenite::tungstenite::Error> {
-        Ok(Cloud::new(5, self.api.get_project_cloud(id).await?))
+        Ok(Cloud::new(5, self.api.project_cloud(id).await?))
     }
 
     pub async fn love(&self) -> Result<(), api::Error> {
@@ -424,7 +424,7 @@ impl Project {
 
     #[cfg(feature = "bytes")]
     pub async fn thumbnail(&self, width: u16, height: u16) -> api::Result<bytes::Bytes> {
-        self.api.get_project_thumbnail(self.id, width, height).await
+        self.api.project_thumbnail(self.id, width, height).await
     }
 
     pub async fn set_thumbnail(&self, buffer: Vec<u8>) -> api::Result<()> {

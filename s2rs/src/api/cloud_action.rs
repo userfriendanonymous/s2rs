@@ -72,7 +72,7 @@ pub enum GetProjectCloudActivityError {
 }
 
 impl Api {
-    pub async fn get_project_cloud_activity(&self, id: u64, cursor: impl Into<Cursor>) -> Result<Vec<CloudAction>, GetProjectCloudActivityError> {
+    pub async fn project_cloud_activity(&self, id: u64, cursor: impl Into<Cursor>) -> Result<Vec<CloudAction>, GetProjectCloudActivityError> {
         let response = self.get_cloud("logs").cursor(cursor)
         .query(&[("projectid", id)]).send_success().await?;
         Ok(CloudAction::parse_vec(&response.json::<Vec<_>>().await?)?)

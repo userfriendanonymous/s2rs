@@ -12,7 +12,7 @@ use async_trait::async_trait;
     type Error = api::Error;
     type This = Project;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(Project3::vec_new(api.get_project_remixes(this.id, cursor).await?, api.clone()))
+        Ok(Project3::vec_new(api.project_remixes(this.id, cursor).await?, api.clone()))
     }
 }
 // endregion: ProjectRemixes
@@ -24,7 +24,7 @@ use async_trait::async_trait;
     type Error = api::Error;
     type This = Project;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(ProjectCommentMeta::vec_new(api.get_project_comments(this.id, cursor).await?, this.clone(), api.clone()))
+        Ok(ProjectCommentMeta::vec_new(api.project_comments(this.id, cursor).await?, this.clone(), api.clone()))
     }
 }
 // endregion: ProjectComments
@@ -36,7 +36,7 @@ use async_trait::async_trait;
     type Error = api::Error;
     type This = ProjectComment;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(ProjectCommentMeta::vec_new(api.get_project_comment_replies(this.at.id, this.id, cursor).await?, this.at.clone(), api.clone()))
+        Ok(ProjectCommentMeta::vec_new(api.project_comment_replies(this.at.id, this.id, cursor).await?, this.at.clone(), api.clone()))
     }
 }
 // endregion: ProjectCommentReplies
@@ -48,7 +48,7 @@ use async_trait::async_trait;
     type Error = api::GetProjectCloudActivityError;
     type This = Project;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(CloudAction::vec_new(api.get_project_cloud_activity(this.id, cursor).await?, api.clone()))
+        Ok(CloudAction::vec_new(api.project_cloud_activity(this.id, cursor).await?, api.clone()))
     }
 }
 // endregion: ProjectCloudActivity

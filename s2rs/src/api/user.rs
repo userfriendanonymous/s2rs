@@ -129,12 +129,12 @@ pub enum GetUserMessagesCountError {
 }
 
 impl Api {
-    pub async fn get_user_meta(&self, name: &str) -> super::Result<User> {
+    pub async fn user_meta(&self, name: &str) -> super::Result<User> {
         let response = self.get(&format!["users/{name}"]).send_success().await?;
         response.json().await
     }
 
-    pub async fn get_user_messages_count(&self, name: &str) -> Result<u64, GetUserMessagesCountError> {
+    pub async fn user_messages_count(&self, name: &str) -> Result<u64, GetUserMessagesCountError> {
         let response = self.get(&format!["users/{name}/messages/count"]).send_success().await?;
 
         let data: json::Parser = response.json().await?;
@@ -142,32 +142,32 @@ impl Api {
         Ok(count)
     }
 
-    pub async fn get_user_followers(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
+    pub async fn user_followers(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
         let response = self.get(&format!["users/{name}/followers/"]).cursor(cursor).send_success().await?;
         response.json().await
     }
 
-    pub async fn get_user_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
+    pub async fn user_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
         let response = self.get(&format!["users/{name}/following"]).cursor(cursor).send_success().await?;
         response.json().await
     }
 
-    pub async fn get_projects_loved_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
+    pub async fn projects_loved_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
         let response = self.get(&format!["users/{name}/following/users/loves/"]).cursor(cursor).send_success().await?;
         response.json().await
     }
 
-    pub async fn get_projects_shared_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
+    pub async fn projects_shared_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
         let response = self.get(&format!["users/{name}/following/users/projects/"]).cursor(cursor).send_success().await?;
         response.json().await
     }
 
-    pub async fn get_studio_managers(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
+    pub async fn studio_managers(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
         let response = self.get(&format!["studios/{id}/managers"]).cursor(cursor).send_success().await?;
         response.json().await
     }
 
-    pub async fn get_studio_curators(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
+    pub async fn studio_curators(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
         let response = self.get(&format!["studios/{id}/curators/"]).cursor(cursor).send_success().await?;
         response.json().await
     }
@@ -214,7 +214,7 @@ impl Api {
         response.json().await
     }
 
-    pub async fn get_user_icon(&self, id: u64, width: u16, height: u16) -> super::Result<Vec<u8>> {
+    pub async fn user_icon(&self, id: u64, width: u16, height: u16) -> super::Result<Vec<u8>> {
         let response = self.get_uploads(&format!["get_image/user/{id}_{width}x{height}.png"]).send().await?;
         let status = response.status();
         if status.is_success() || status.as_u16() == 302 {

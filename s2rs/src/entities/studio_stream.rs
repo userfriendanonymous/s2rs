@@ -12,7 +12,7 @@ use async_trait::async_trait;
     type Error = api::Error;
     type This = Studio;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(UserMeta::vec_new(api.get_studio_curators(this.id, cursor).await?, api.clone()))
+        Ok(UserMeta::vec_new(api.studio_curators(this.id, cursor).await?, api.clone()))
     }
 }
 // endregion: StudioCurators
@@ -24,7 +24,7 @@ use async_trait::async_trait;
     type Error = api::Error;
     type This = Studio;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(UserMeta::vec_new(api.get_studio_managers(this.id, cursor).await?, api.clone()))
+        Ok(UserMeta::vec_new(api.studio_managers(this.id, cursor).await?, api.clone()))
     }
 }
 // endregion: StudioManagers
@@ -36,7 +36,7 @@ use async_trait::async_trait;
     type Error = api::Error;
     type This = Studio;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(StudioProject::vec_new(api.get_studio_projects(this.id, cursor).await?, api.clone()))
+        Ok(StudioProject::vec_new(api.studio_projects(this.id, cursor).await?, api.clone()))
     }
 }
 // endregion: StudioProjects
@@ -48,7 +48,7 @@ use async_trait::async_trait;
     type Error = api::Error;
     type This = Studio;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(StudioCommentMeta::vec_new(api.get_studio_comments(this.id, cursor).await?, this.clone(), api.clone()))
+        Ok(StudioCommentMeta::vec_new(api.studio_comments(this.id, cursor).await?, this.clone(), api.clone()))
     }
 }
 // endregion: StudioComments
@@ -60,7 +60,7 @@ use async_trait::async_trait;
     type Error = api::Error;
     type This = StudioComment;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(StudioCommentMeta::vec_new(api.get_studio_comment_replies(this.at.id, this.id, cursor).await?, this.at.clone(), api.clone()))
+        Ok(StudioCommentMeta::vec_new(api.studio_comment_replies(this.at.id, this.id, cursor).await?, this.at.clone(), api.clone()))
     }
 }
 // endregion: StudioCommentReplies
@@ -72,7 +72,7 @@ use async_trait::async_trait;
     type Error = api::GetStudioActivityError;
     type This = Studio;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(StudioAction::vec_new(api.get_studio_activity(this.id, cursor).await?, api.clone()))
+        Ok(StudioAction::vec_new(api.studio_activity(this.id, cursor).await?, api.clone()))
     }
 }
 // endregion: StudioActivity

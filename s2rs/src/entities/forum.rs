@@ -74,7 +74,7 @@ impl ForumTopic {
 
     #[cfg(feature = "rss")]
     pub async fn rss(self: &Arc<Self>) -> Result<ForumTopicRss, api::GetForumTopicRssError> {
-        Ok(ForumTopicRss::with_this(self.api.get_forum_topic_rss(self.id).await?, self.clone(), self.api.clone()))
+        Ok(ForumTopicRss::with_this(self.api.forum_topic_rss(self.id).await?, self.clone(), self.api.clone()))
     }
 }
 // endregion: ForumTopic
@@ -96,7 +96,7 @@ impl ForumPost {
     }
 
     pub async fn content(&self) -> api::Result<String> {
-        self.api.get_forum_post_content(self.id).await
+        self.api.forum_post_content(self.id).await
     }
 }
 

@@ -134,7 +134,7 @@ pub enum GetFollowingUsersActivity {
 }
 
 impl Api {
-    pub async fn get_following_users_activity(&self, name: &str, cursor: impl Into<Cursor>) -> Result<Vec<FollowingAction>, GetFollowingUsersActivity> {
+    pub async fn following_users_activity(&self, name: &str, cursor: impl Into<Cursor>) -> Result<Vec<FollowingAction>, GetFollowingUsersActivity> {
         let response = self.get(&format!["users/{name}/following/users/activity/"]).cursor(cursor).send_success().await?;
         response.json_parser_vec().await
     }

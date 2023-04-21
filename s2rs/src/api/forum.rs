@@ -126,13 +126,13 @@ pub enum GetForumTopicRssError {
 }
 
 impl Api {
-    pub async fn get_forum_post_content(&self, id: u64) -> super::Result<String> {
+    pub async fn forum_post_content(&self, id: u64) -> super::Result<String> {
         let response = self.get_base(&format!["discuss/post/{id}/source/"]).send_success().await?;
         Ok(response.text().await?)
     }
 
     #[cfg(feature = "rss")]
-    pub async fn get_forum_topic_rss(&self, id: u64) -> Result<ForumTopicRss, GetForumTopicRssError> {
+    pub async fn forum_topic_rss(&self, id: u64) -> Result<ForumTopicRss, GetForumTopicRssError> {
         let response = self.get_base(&format!["discuss/feeds/topic/{id}/"]).send_success().await?;
         let feed = feed_rs::parser::parse(response.text().await?.as_bytes())?;
         Ok(ForumTopicRss::try_from_rss(feed)?)
