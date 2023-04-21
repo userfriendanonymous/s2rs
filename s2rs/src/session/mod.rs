@@ -65,9 +65,9 @@ impl Session {
         let session = Self::new(name.clone());
         let data = session.me().login(&name, password).await?;
         Ok(Self::with_auth(name, &Tokens {
-            session: "".to_owned(),
+            session: data.session_token,
             x: data.x_token,
-            csrf: "".to_owned()
+            csrf: "a".to_owned()
         })?)
     }
 
@@ -87,7 +87,7 @@ impl Session {
         ForumTopic::new(id, self.api.clone())
     }
 
-    pub fn forum_topic_post(&self, id: u64) -> Arc<ForumPost> {
+    pub fn forum_post(&self, id: u64) -> Arc<ForumPost> {
         ForumPost::new(id, self.api.clone())
     }
 

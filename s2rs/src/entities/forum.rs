@@ -98,5 +98,9 @@ impl ForumPost {
     pub async fn content(&self) -> api::Result<String> {
         self.api.forum_post_content(self.id).await
     }
+
+    pub async fn edit(&self, content: &str) -> api::Result<()> {
+        self.api.edit_forum_post(self.id, content).await
+    }
 }
 

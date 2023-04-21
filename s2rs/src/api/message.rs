@@ -140,7 +140,7 @@ impl json::Parsable for MessageEvent {
                     location_title: data.i("comment_obj_title").string()?,
                     id: data.i("comment_id").u64()?,
                     fragment: data.i("comment_fragment").string()?,
-                    to_name: data.i("commentee_username").option(|v| v.string()).transpose()?,
+                    to_name: data.try_i("commentee_username")?,
                 }
             },
             "curatorinvite" => Self::InviteCurator {

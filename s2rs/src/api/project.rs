@@ -1,6 +1,6 @@
 use super::{Api, user::{UserProfileImages, UserHistory}, utils::{ResponseUtils, RequestBuilderUtils}};
 use serde::Deserialize;
-use serde_json::{Value, json};
+use serde_json::json;
 use crate::cursor::Cursor;
 
 // region: Project
@@ -175,37 +175,27 @@ impl Api {
     }
 
     pub async fn love_project(&self, id: u64) -> super::Result<()> {
-        let response = self.post_proxy(&format!("projects/{id}/loves/user/{}", self.name())).project_send_success(id).await?;
-        let data: Value = response.json().await?;
-        dbg!(data);
+        let _ = self.post_proxy(&format!("projects/{id}/loves/user/{}", self.name())).project_send_success(id).await?;
         Ok(())
     }
 
     pub async fn unlove_project(&self, id: u64) -> super::Result<()> {
-        let response = self.delete_proxy(&format!("projects/{id}/loves/user/{}", self.name())).project_send_success(id).await?;
-        let data: Value = response.json().await?;
-        dbg!(data);
+        let _ = self.delete_proxy(&format!("projects/{id}/loves/user/{}", self.name())).project_send_success(id).await?;
         Ok(())
     }
 
     pub async fn favorite_project(&self, id: u64) -> super::Result<()> {
-        let response = self.post_proxy(&format!("projects/{id}/favorites/user/{}/", self.name())).project_send_success(id).await?;
-        let data: Value = response.json().await?;
-        dbg!(data);
+        let _ = self.post_proxy(&format!("projects/{id}/favorites/user/{}", self.name())).send().await?;
         Ok(())
     }
 
     pub async fn unfavorite_project(&self, id: u64) -> super::Result<()> {
-        let response = self.delete_proxy(&format!("projects/{id}/favorites/user/{}/", self.name())).project_send_success(id).await?;
-        let data: Value = response.json().await?;
-        dbg!(data);
+        let _ = self.delete_proxy(&format!("projects/{id}/favorites/user/{}/", self.name())).project_send_success(id).await?;
         Ok(())
     }
 
     pub async fn unshare_project(&self, id: u64) -> super::Result<()> {
-        let response = self.put_proxy(&format!("projects/{id}/unshare/")).project_send_success(id).await?;
-        let data: Value = response.json().await?;
-        dbg!(data);
+        let _response = self.put_proxy(&format!("projects/{id}/unshare/")).project_send_success(id).await?;
         Ok(())
     }
 

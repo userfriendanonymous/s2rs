@@ -5,6 +5,7 @@ use crate::{UserWithId, api, Api};
 pub struct Login {
     pub this: Arc<UserWithId>,
     pub x_token: String,
+    pub session_token: String,
     pub tries_count: u16,
     pub message: String,
     pub success: u8,
@@ -19,7 +20,8 @@ impl Login {
             success: data.success,
             tries_count: data.tries_count,
             x_token: data.x_token,
-            this: UserWithId::new(data.id, data.name, api)
+            session_token: data.session_token,
+            this: UserWithId::new(data.id, data.name, api),
         }
     }
 }

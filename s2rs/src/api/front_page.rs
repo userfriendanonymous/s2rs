@@ -4,7 +4,21 @@ use crate::Api;
 use super::utils::{RequestBuilderUtils, ResponseUtils};
 use crate::json;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
+pub struct News {
+    pub id: u64,
+    #[serde( rename = "stamp" )]
+    pub at: String,
+    #[serde( rename = "headline" )]
+    pub title: String,
+    pub url: String,
+    pub image: String,
+    #[serde( rename = "copy" )]
+    pub description: String,
+}
+
+// region: FrontPage
+#[derive(Debug, Deserialize, Clone)]
 pub struct FrontPage {
     #[serde( rename = "community_newest_projects" )]
     pub new_projects: Vec<FrontPageProject>,
@@ -22,21 +36,7 @@ pub struct FrontPage {
     pub design_studio_projects: Vec<FrontPageDesignStudioProject>,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct News {
-    pub id: u64,
-    #[serde( rename = "stamp" )]
-    pub at: String,
-    #[serde( rename = "headline" )]
-    pub title: String,
-    pub url: String,
-    pub image: String,
-    #[serde( rename = "copy" )]
-    pub description: String,
-}
-
-// region: structures
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct FrontPageProject {
     pub thumbnail_url: String,
     pub title: String,
@@ -46,7 +46,7 @@ pub struct FrontPageProject {
     pub love_count: u32,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct FrontPageMostRemixedProject {
     pub id: u64,
     pub title: String,
@@ -58,7 +58,7 @@ pub struct FrontPageMostRemixedProject {
     pub author_name: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct FrontPageDesignStudioProject {
     pub id: u64,
     #[serde( rename = "gallery_id" )]
@@ -74,7 +74,7 @@ pub struct FrontPageDesignStudioProject {
     pub author_name: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct FrontPageCuratedProject {
     pub id: u64,
     pub title: String,
@@ -86,13 +86,63 @@ pub struct FrontPageCuratedProject {
     pub curated_by_name: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct FrontPageFeaturedStudio {
     pub id: u64,
     pub title: String,
     pub thumbnail_url: String,
 }
-// endregion: structures
+// endregion: FrontPage
+
+// region: Health
+#[derive(Deserialize, Debug, Clone)]
+pub struct Health {
+    pub version: String,
+    pub uptime: f32,
+    pub load: Vec<f32>,
+    pub sql: HealthSql,
+    pub time_stamp: u64,
+    pub cache: HealthCache,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct HealthCache {
+    pub connected: bool,
+    pub ready: bool
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct HealthSql {
+    pub main: HealthSqlItem,
+    pub project_comments: HealthSqlItem,
+    #[serde( rename = "gallery_comments" )]
+    pub studio_comments: HealthSqlItem,
+    #[serde( rename = "userprofile_comments" )]
+    pub profile_comments: HealthSqlItem
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct HealthSqlItem {
+    pub primary: HealthSqlItemItem,
+    pub replica: HealthSqlItemItem
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct HealthSqlItemItem {
+    pub ssl: bool,
+    pub destroyed: bool,
+    pub min: u32,
+    pub max: u32,
+    #[serde( rename = "numUsed" )]
+    pub used_count: u32,
+    #[serde( rename = "numFree" )]
+    pub free_count: u32,
+    #[serde( rename = "pendingAcquires" )]
+    pub pending_acquires: u32,
+    #[serde( rename = "pendingCreates" )]
+    pub pending_creates: u32,
+}
+// endregion: Health
 
 #[derive(Forwarder, Debug)]
 pub enum GetProjectsCountError {
@@ -115,5 +165,15 @@ impl Api {
         let response = self.get("projects/count/all/").send_success().await?;
         let data: json::Parser = response.json().await?;
         Ok(data.i("count").u64()?)
+    }
+
+    pub async fn clear_messages(&self) -> super::Result<()> {
+        let _ = self.post_site_api("messages/messages-clear/").send_success().await?;
+        Ok(())
+    }
+
+    pub async fn health(&self) -> super::Result<Health> {
+        let response = self.get("health/").send_success().await?;
+        response.json().await
     }
 }

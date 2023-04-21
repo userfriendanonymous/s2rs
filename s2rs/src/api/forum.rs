@@ -1,9 +1,9 @@
 use std::str::FromStr;
 use crate::Api;
 use super::utils::RequestBuilderUtils;
-use crate::json;
 #[cfg(feature = "time")] use chrono::{DateTime, Utc};
 use s2rs_derive::Forwarder;
+use serde_json::json;
 
 // region: ForumCategory
 pub enum ForumCategory {
@@ -55,7 +55,7 @@ pub enum ForumTopicRssParseIdError {
 
 #[derive(Forwarder, Clone, Debug)]
 pub enum ForumTopicRssParseError {
-    #[forward] Expected(json::ExpectedError),
+    #[forward] Expected(crate::json::ExpectedError),
     #[forward(<u64 as FromStr>::Err)]
     Id(ForumTopicRssParseIdError),
     UpdatedAtNotFound,
@@ -94,7 +94,7 @@ pub struct ForumTopicRssPost {
 
 #[derive(Forwarder, Debug, Clone)]
 pub enum ForumTopicRssPostParseError {
-    #[forward] Expected(json::ExpectedError),
+    #[forward] Expected(crate::json::ExpectedError),
     Id(<u64 as FromStr>::Err),
     AuthorNotFound,
     ContentNotFound,
@@ -136,5 +136,18 @@ impl Api {
         let response = self.get_base(&format!["discuss/feeds/topic/{id}/"]).send_success().await?;
         let feed = feed_rs::parser::parse(response.text().await?.as_bytes())?;
         Ok(ForumTopicRss::try_from_rss(feed)?)
+    }
+
+    pub async fn edit_forum_post(&self, id: u64, content: &str) -> super::Result<()> {
+        let response = self.post_base(&format!["discuss/post/{id}/edit/"]).json(json!({
+            "csrfmiddlewaretoken": "a",
+            "body": content
+        }))?.send().await?;
+
+        let status = response.status();
+        if !status.is_success() && status.as_u16() != 302 {
+            Err(status)?
+        }
+        Ok(())
     }
 }

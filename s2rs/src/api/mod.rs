@@ -19,6 +19,7 @@ pub use explore::*;
 pub use search::*;
 pub use forum::*;
 pub use login::*;
+pub use stuff::*;
 
 pub mod user;
 pub mod project;
@@ -38,6 +39,7 @@ pub mod front_page;
 pub mod explore;
 pub mod search;
 pub mod login;
+pub mod stuff;
 mod utils;
 
 pub mod protocols {
@@ -133,19 +135,24 @@ impl Api {
         })
     }
 
+    fn core_headers() -> headers::Headers {
+        let mut headers = headers::Headers::new();
+        headers.add("referer", "https://scratch.mit.edu");
+        headers.add("x-requested-with", "XMLHttpRequest");
+        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36");
+        headers
+    }
+
     pub fn with_auth(name: impl Into<Arc<String>>, tokens: &Tokens) -> std::result::Result<Arc<Self>, WithAuthError> {
         let mut cookies = Cookies::default();
         cookies.add("scratchcsrftoken", tokens.csrf.as_str());
         cookies.add("scratchsessionsid", tokens.session.as_str());
         cookies.add("scratchlanguage", "en");
 
-        let mut headers = headers::Headers::new();
+        let mut headers = Self::core_headers();
         headers.add("cookie", Into::<String>::into(cookies));
         headers.add("x-csrftoken", &tokens.csrf);
         headers.add("x-token", &tokens.x);
-        headers.add("referer", "https://scratch.mit.edu");
-        headers.add("x-requested-with", "XMLHttpRequest");
-        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36");
         
         Ok(Arc::new(Self {
             client: Arc::new(Client::new()),
@@ -212,7 +219,7 @@ impl Api {
 
     // region: proxy
     fn request_proxy(&self, method: Method, path: &str) -> RequestBuilder {
-        self.request_site_api(method, &format!["{}proxy/{path}", domains::API])
+        self.https_request(method, &format!["{}proxy/{path}", domains::API])
     }
     fn get_proxy(&self, path: &str) -> RequestBuilder {
         self.request_proxy(Method::GET, path)

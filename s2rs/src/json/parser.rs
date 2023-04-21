@@ -1,6 +1,8 @@
 use serde::Deserialize;
 use serde_json::Value;
 
+use crate::utils::TryAs;
+
 // #[derive(Debug)]
 // pub enum Error {
 //     Expected(ExpectedError)
@@ -18,8 +20,8 @@ pub enum ExpectedErrorVariant {
     String,
     U64,
     U8,
-    Option,
     Array,
+    U16
 }
 
 pub trait Parsable where Self: Sized {
@@ -33,6 +35,57 @@ pub trait Parsable where Self: Sized {
         Ok(result)
     }
 }
+
+// region: TryAs
+
+impl TryAs<u64, ExpectedError> for Parser {
+    fn try_as(&self) -> ExpectedResult<u64> {
+        self.u64()
+    }
+}
+
+impl TryAs<u16, ExpectedError> for Parser {
+    fn try_as(&self) -> ExpectedResult<u16> {
+        self.u16()
+    }
+}
+
+impl TryAs<String, ExpectedError> for Parser {
+    fn try_as(&self) -> ExpectedResult<String> {
+        self.string()
+    }
+}
+
+impl TryAs<u8, ExpectedError> for Parser {
+    fn try_as(&self) -> ExpectedResult<u8> {
+        self.u8()
+    }
+}
+
+impl TryAs<Vec<Self>, ExpectedError> for Parser {
+    fn try_as(&self) -> ExpectedResult<Vec<Self>> {
+        self.array()
+    }
+}
+
+impl TryAs<bool, ExpectedError> for Parser {
+    fn try_as(&self) -> ExpectedResult<bool> {
+        self.bool()
+    }
+}
+
+impl<T, E> TryAs<Option<T>, E> for Parser where Self: TryAs<T, E> {
+    fn try_as(&self) -> Result<Option<T>, E> {
+        self.typed_option()
+    }
+}
+
+impl<T> TryAs<Vec<T>, ExpectedError> for Parser where Self: TryAs<T, ExpectedError> {
+    fn try_as(&self) -> ExpectedResult<Vec<T>> {
+        self.typed_array()
+    }
+}
+// endregion: ParserAs
 
 #[derive(Clone)]
 pub struct Parser {
@@ -88,11 +141,22 @@ impl Parser {
         self.value.as_u64().ok_or_else(error)?.try_into().ok().ok_or_else(error)
     }
 
-    pub fn option<T>(&self, change: impl FnOnce(Self) -> T) -> Option<T> {
+    pub fn u16(&self) -> ExpectedResult<u16> {
+        self.u64()?.try_into().map_err(|_| self.error_expected(ExpectedErrorVariant::U16))
+    }
+
+    pub fn typed_option<T, E>(&self) -> Result<Option<T>, E> where Self: TryAs<T, E> {
+        match self.option() {
+            Some(v) => Ok(Some(v.try_as()?)),
+            None => Ok(None),
+        }
+    }
+
+    pub fn option(&self) -> Option<Self> {
         if self.value.is_null() {
             None
         } else {
-            Some(change(self.clone()))
+            Some(self.clone())
         }
     }
 
@@ -105,9 +169,21 @@ impl Parser {
         Ok(result)
     }
 
+    pub fn typed_array<T>(&self) -> ExpectedResult<Vec<T>> where Self: TryAs<T, ExpectedError> {
+        let mut result = Vec::new();
+        for value in self.value.as_array().ok_or_else(|| self.error_expected(ExpectedErrorVariant::Array))?.iter().cloned() {
+            result.push(Self::from(value).try_as()?)
+        }
+        Ok(result)
+    }
+
     #[allow(unused)]
     pub fn value(&self) -> &Value {
         &self.value
+    }
+
+    pub fn try_i<I: serde_json::value::Index, T, E>(&self, index: I) -> Result<T, E> where Self: TryAs<T, E> {
+        Self::from(self.value[index].to_owned()).try_as()
     }
 
     pub fn i<I: serde_json::value::Index>(&self, index: I) -> Self {
