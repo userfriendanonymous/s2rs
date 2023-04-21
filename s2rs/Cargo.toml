@@ -7,7 +7,7 @@ description = "An intuitive Rust -> Scratch API library"
 repository = "https://github.com/userfriendanonymous/s2rs/"
 
 [features]
-# default = ["all"] # to be removed?
+default = ["all"] # to be removed?
 time = ["dep:chrono"]
 rss = ["time", "dep:feed-rs"]
 html = ["dep:html_parser"]
