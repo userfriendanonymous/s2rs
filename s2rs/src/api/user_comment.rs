@@ -183,9 +183,9 @@ impl Api {
 
 impl Api {
     pub async fn report_user_comment(&self, id: u64) -> super::Result<()> {
-        self.post_site_api(&format!["comments/user/{}/rep/", &self.name]).json(json!({
+        self.post_site_api(&format!["comments/user/{}/rep/", &self.name]).json(&json!({
             "id": id.to_string()
-        }))?.send_success().await?;
+        })).send_success().await?;
         Ok(())
     }
 }

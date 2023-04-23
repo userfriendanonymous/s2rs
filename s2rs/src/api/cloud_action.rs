@@ -1,6 +1,5 @@
 use s2rs_derive::Forwarder;
 use reqwest::StatusCode;
-use super::utils::ResponseUtils;
 use super::{Api, utils::RequestBuilderUtils};
 use crate::json::{self, Parsable};
 use crate::cursor::Cursor;
@@ -66,7 +65,7 @@ impl json::Parsable for CloudActionEvent {
 
 #[derive(Forwarder, Debug)]
 pub enum GetProjectCloudActivityError {
-    #[forward(StatusCode)]
+    #[forward(StatusCode, reqwest::Error)]
     This(super::Error),
     #[forward] Parsing(CloudActionParseError),
 }

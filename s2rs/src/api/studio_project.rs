@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use super::{user::UserProfileImages, Api, utils::{RequestBuilderUtils, ResponseUtils}};
+use super::{user::UserProfileImages, Api, utils::RequestBuilderUtils};
 use crate::cursor::Cursor;
 
 #[derive(Deserialize, Debug)]
@@ -17,6 +17,6 @@ pub struct StudioProject {
 impl Api {
     pub async fn studio_projects(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<StudioProject>> {
         let response = self.get(&format!["studios/{id}/projects"]).cursor(cursor).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 }

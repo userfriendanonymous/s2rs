@@ -28,7 +28,7 @@ impl FollowingAction {
 // endregion: FollowingAction
 
 // region: FollowingActionEvent
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug)]
 pub enum FollowingActionEvent {
     FollowUser(Arc<UserWithId>),
     FollowStudio(Arc<StudioWithTitle>),

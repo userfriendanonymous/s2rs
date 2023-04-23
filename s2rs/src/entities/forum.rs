@@ -3,7 +3,7 @@ use std::sync::Arc;
 use crate::{Api, api};
 #[cfg(feature = "time")] use chrono::{DateTime, Utc};
 use derivative::Derivative;
-use super::User;
+#[cfg(feature = "rss")] use super::User;
 
 // region: ForumTopicRss
 #[derive(Debug)]

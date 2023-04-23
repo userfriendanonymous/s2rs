@@ -145,10 +145,10 @@ impl Api {
     }
 
     pub async fn edit_forum_post(&self, id: u64, content: &str) -> super::Result<()> {
-        let response = self.post_base(&format!["discuss/post/{id}/edit/"]).json(json!({
+        let response = self.post_base(&format!["discuss/post/{id}/edit/"]).json(&json!({
             "csrfmiddlewaretoken": "a",
             "body": content
-        }))?.send().await?;
+        })).send().await?;
 
         let status = response.status();
         if !status.is_success() && status.as_u16() != 302 {
@@ -158,10 +158,10 @@ impl Api {
     }
 
     pub async fn send_forum_post(&self, id: u64, content: &str) -> super::Result<()> {
-        let response = self.post_base(&format!["discuss/post/{id}/?"]).json(json!({
+        let response = self.post_base(&format!["discuss/post/{id}/?"]).json(&json!({
             "csrfmiddlewaretoken": "a",
             "body": content
-        }))?.send().await?;
+        })).send().await?;
 
         let status = response.status();
         if !status.is_success() && status.as_u16() != 302 {

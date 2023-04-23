@@ -1,7 +1,7 @@
 use s2rs_derive::Forwarder;
 use serde::Deserialize;
 use crate::Api;
-use super::utils::{RequestBuilderUtils, ResponseUtils};
+use super::utils::RequestBuilderUtils;
 use crate::json;
 
 #[derive(Debug, Deserialize, Clone)]
@@ -147,18 +147,19 @@ pub struct HealthSqlItemItem {
 #[derive(Forwarder, Debug)]
 pub enum GetProjectsCountError {
     #[forward] Expected(json::ExpectedError),
-    #[forward] This(super::Error)
+    #[forward(reqwest::Error)]
+    This(super::Error)
 }
 
 impl Api {
     pub async fn front_page(&self) -> super::Result<FrontPage> {
         let response = self.get_proxy("featured/").send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn news(&self) -> super::Result<Vec<News>> {
         let response = self.get("news").send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn projects_count(&self) -> Result<u64, GetProjectsCountError> {
@@ -174,6 +175,6 @@ impl Api {
 
     pub async fn health(&self) -> super::Result<Health> {
         let response = self.get("health/").send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 }

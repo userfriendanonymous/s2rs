@@ -14,6 +14,7 @@ pub struct ExpectedError {
     pub expected: ExpectedErrorVariant
 }
 
+#[cfg_attr(feature = "ser", derive(serde::Serialize))]
 #[derive(Debug, Clone, Copy)]
 pub enum ExpectedErrorVariant {
     Bool,

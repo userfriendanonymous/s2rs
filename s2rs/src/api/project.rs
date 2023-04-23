@@ -1,4 +1,4 @@
-use super::{Api, user::{UserProfileImages, UserHistory}, utils::{ResponseUtils, RequestBuilderUtils}};
+use super::{Api, user::{UserProfileImages, UserHistory}, utils::RequestBuilderUtils};
 use serde::Deserialize;
 use serde_json::json;
 use crate::cursor::Cursor;
@@ -131,45 +131,45 @@ pub struct ProjectRemix {
 impl Api {
     pub async fn project_meta(&self, id: u64) -> super::Result<Project> {
         let response = self.get(&format!("projects/{id}/")).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn user_projects(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project3>> {
         let response = self.get(&format!("users/{name}/projects/")).cursor(cursor).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn user_favorites(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project3>> {
         let response = self.get(&format!("users/{name}/favorites/")).cursor_2(cursor).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn user_views(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
         let response = self.get(&format!("users/{name}/projects/recentlyviewed/")).cursor(cursor).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn project_remixes(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Project3>> {
         let response = self.get(&format!("projects/{id}/remixes/")).cursor(cursor).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn send_project_comment(&self, id: u64, content: &str, parent_id: Option<u64>, to_id: Option<u64>) -> super::Result<()> {
         let _ = self.post_proxy(&format!["comments/project/{id}/"])
-        .json(json!({
+        .json(&json!({
             "commentee_id": to_id,
             "content": content,
             "parent_id": parent_id
-        }))?
+        }))
         .project_send_success(id).await?;
         Ok(())
     }
 
     pub async fn set_project_commenting(&self, id: u64, allowed: bool) -> super::Result<()> {
         let _ = self.put(&format!["projects/{id}/"])
-        .json(json!({
+        .json(&json!({
             "comments_allowed": allowed
-        }))?
+        }))
         .project_send_success(id).await?;
         Ok(())
     }
@@ -211,27 +211,27 @@ impl Api {
 
     pub async fn set_project_title(&self, id: u64, content: &str) -> super::Result<()> {
         let _ = self.put(&format!("projects/{id}/"))
-        .json(json!({
+        .json(&json!({
             "title": content
-        }))?
+        }))
         .project_send_success(id).await?;
         Ok(())
     }
 
     pub async fn set_project_description(&self, id: u64, content: &str) -> super::Result<()> {
         let _ = self.put(&format!("projects/{id}/"))
-        .json(json!({
+        .json(&json!({
             "description": content
-        }))?
+        }))
         .project_send_success(id).await?;
         Ok(())
     }
 
     pub async fn set_project_instructions(&self, id: u64, content: &str) -> super::Result<()> {
         let _ = self.put(&format!("projects/{id}/"))
-        .json(json!({
+        .json(&json!({
             "instructions": content
-        }))?
+        }))
         .project_send_success(id).await?;
         Ok(())
     }

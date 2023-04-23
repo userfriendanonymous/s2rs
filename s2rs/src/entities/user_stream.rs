@@ -117,7 +117,7 @@ use crate::cursor::Cursor;
 #[derive(Clone)] pub struct UserFollowingActivity;
 #[async_trait] impl GeneralStreamGen for UserFollowingActivity {
     type Data = FollowingAction;
-    type Error = api::GetFollowingUsersActivity;
+    type Error = api::GetFollowingUsersActivityError;
     type This = User;
     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
         Ok(FollowingAction::vec_new(api.following_users_activity(&this.name, cursor).await?, api.clone()))

@@ -28,7 +28,7 @@ impl Message {
 // endregion: Message
 
 // region: MessageCommentLocation
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug)]
 pub enum MessageCommentLocation {
     Profile(Arc<UserWithId>),
     Studio(Arc<StudioWithTitle>),
@@ -53,7 +53,7 @@ impl MessageCommentLocation {
 // endregion: MessageCommentLocation
 
 // region: MessageEvent
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug)]
 pub enum MessageEvent {
     FollowUser(Arc<UserWithId>),
     LoveProject(Arc<ProjectWithTitle>),

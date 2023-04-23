@@ -97,7 +97,7 @@ impl json::Parsable for StudioActionEvent {
 
 #[derive(Forwarder, Debug)]
 pub enum GetStudioActivityError {
-    #[forward] This(super::Error),
+    #[forward(reqwest::Error)] This(super::Error),
     #[forward] Parsing(StudioActionParseError),
 }
 

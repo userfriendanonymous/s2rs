@@ -18,7 +18,7 @@ impl UserFeatured {
             id: data.id,
             label: data.label,
             label_id: data.label_id,
-            profile: UserWithId::with_this(data.profile.id, profile_this),
+            profile: UserWithId::with_this(data.profile.id, profile_this, api.clone()),
             profile_image_url: data.profile_image_url,
             project: UserFeaturedProject::new(data.project, api)
         }

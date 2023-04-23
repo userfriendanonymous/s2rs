@@ -167,7 +167,8 @@ impl json::Parsable for MessageEvent {
 
 #[derive(Forwarder, Debug)]
 pub enum GetUserMessagesError {
-    #[forward] This(super::Error),
+    #[forward(reqwest::Error)]
+    This(super::Error),
     #[forward] Parsing(MessageParseError)
 }
 

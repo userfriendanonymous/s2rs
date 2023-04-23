@@ -1,8 +1,6 @@
 use s2rs_derive::Forwarder;
 use serde::Deserialize;
-
 use crate::json;
-
 use super::Api;
 
 #[derive(Deserialize, Clone, Debug)]
@@ -72,7 +70,7 @@ pub enum LoginError {
 impl Api {
     #[cfg(feature = "cookie")]
     pub async fn login(&self, name: &str, password: &str) -> Result<Login, LoginError> {
-        use super::utils::{RequestBuilderUtils, ResponseUtils};
+        use super::utils::{RequestBuilderUtils};
         use serde_json::json;
         use crate::cookies::Cookies;
 
@@ -85,10 +83,10 @@ impl Api {
 
         let response = self.post_base("login/")
         .headers(headers.try_into()?)
-        .json(json!({
+        .json(&json!({
             "username": name,
             "password": password,
-        }))?.send_success().await?;
+        })).send_success().await?;
 
         let header = response.headers().get("Set-Cookie").ok_or(LoginError::SetCookieHeaderNotFound)?;
         let header = header.to_str()?;

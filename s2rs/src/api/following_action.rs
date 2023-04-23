@@ -128,13 +128,14 @@ impl json::Parsable for FollowingActionEvent {
 }
 
 #[derive(Forwarder)]
-pub enum GetFollowingUsersActivity {
+pub enum GetFollowingUsersActivityError {
     #[forward] Parsing(FollowingActionParseError),
-    #[forward] This(super::Error)
+    #[forward(reqwest::Error)]
+    This(super::Error)
 }
 
 impl Api {
-    pub async fn following_users_activity(&self, name: &str, cursor: impl Into<Cursor>) -> Result<Vec<FollowingAction>, GetFollowingUsersActivity> {
+    pub async fn following_users_activity(&self, name: &str, cursor: impl Into<Cursor>) -> Result<Vec<FollowingAction>, GetFollowingUsersActivityError> {
         let response = self.get(&format!["users/{name}/following/users/activity/"]).cursor(cursor).send_success().await?;
         response.json_parser_vec().await
     }

@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use crate::Api;
-use super::utils::{RequestBuilderUtils, ResponseUtils};
+use super::utils::RequestBuilderUtils;
 
 #[derive(Deserialize, Clone, Debug)]
 pub struct StuffAuthor {
@@ -103,30 +103,30 @@ impl Api {
     pub async fn stuff_all(&self, page: u32, sort_by: &str) -> super::Result<Vec<StuffProject>> {
         let response = self.get_site_api("projects/all/").query(&[("page", page)])
         .query(&[("ascsort", ""), ("descsort", sort_by)]).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn stuff_shared(&self, page: u32, sort_by: &str) -> super::Result<Vec<StuffSharedProject>> {
         let response = self.get_site_api("projects/shared/").query(&[("page", page)])
         .query(&[("ascsort", ""), ("descsort", sort_by)]).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn stuff_unshared(&self, page: u32, sort_by: &str) -> super::Result<Vec<StuffProject>> {
         let response = self.get_site_api("projects/notshared/").query(&[("page", page)])
         .query(&[("ascsort", ""), ("descsort", sort_by)]).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn stuff_trashed(&self, page: u32, sort_by: &str) -> super::Result<Vec<StuffProject>> {
         let response = self.get_site_api("projects/trashed/").query(&[("page", page)])
         .query(&[("ascsort", ""), ("descsort", sort_by)]).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn stuff_studios(&self, page: u32, sort_by: &str) -> super::Result<Vec<StuffAuthor>> {
         let response = self.get_site_api("galleries/all/").query(&[("page", page)])
         .query(&[("ascsort", ""), ("descsort", sort_by)]).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 }

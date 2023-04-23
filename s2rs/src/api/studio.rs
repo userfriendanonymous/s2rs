@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use serde_json::json;
-use super::{Api, utils::{RequestBuilderUtils, ResponseUtils}};
+use super::{Api, utils::RequestBuilderUtils};
 use crate::cursor::Cursor;
 
 #[derive(Deserialize, Debug)]
@@ -67,17 +67,17 @@ pub struct StudioInfo {
 impl Api {
     pub async fn studio_meta(&self, id: u64) -> super::Result<Studio> {
         let response = self.get(&format!["studios/{id}/"]).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn user_curating_studios(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Studio>> {
         let response = self.get(&format!["users/{name}/studios/curate/"]).cursor(cursor).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn project_studios(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Studio>> {
         let response = self.get(&format!["projects/{id}/studios/"]).cursor(cursor).send_success().await?;
-        response.json().await
+        Ok(response.json().await?)
     }
 
     pub async fn add_studio_project(&self, id: u64, project_id: u64) -> super::Result<()> {
@@ -121,11 +121,11 @@ impl Api {
 
     pub async fn send_studio_comment(&self, id: u64, content: &str, parent_id: Option<u64>, to_id: Option<u64>) -> super::Result<()> {
         let _ = self.post_site_api(&format!["comments/gallery/{id}/add/"])
-        .json(json!({
+        .json(&json!({
             "content": content,
             "parent_id": parent_id,
             "commentee_id": to_id
-        }))?
+        }))
         .send_success().await?;
         Ok(())
     }
@@ -160,10 +160,10 @@ impl Api {
 
     pub async fn set_studio_info(&self, id: u64, info: &StudioInfo) -> super::Result<()> {
         let _ = self.put_site_api(&format!["galleries/all/{id}/"])
-        .json(json!({
+        .json(&json!({
             "title": info.title,
             "description": info.description
-        }))?
+        }))
         .send_success().await?;
         Ok(())
     }
