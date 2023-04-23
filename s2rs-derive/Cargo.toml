@@ -1,6 +1,6 @@
 [package]
 name = "s2rs-derive"
-version = "0.1.2"
+version = "0.1.0"
 license = "MIT"
 edition = "2021"
 description = "s2rs internal macros, should not be used directly."

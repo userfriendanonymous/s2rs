@@ -91,32 +91,3 @@ pub fn deref(args: TokenStream, input_stream: TokenStream) -> TokenStream {
     };
     gen.into()
 }
-
-#[proc_macro_attribute]
-pub fn ts_export(_args: TokenStream, input_stream: TokenStream) -> TokenStream {
-    use syn::Item;
-    let input: Item = parse_macro_input!(input_stream);
-    // let attrs = match &input {
-    //     Item::Const(item) => &item.attrs,
-    //     Item::Enum(item) => &item.attrs,
-    //     Item::ExternCrate(item) => &item.attrs,
-    //     Item::Fn(item) => &item.attrs,
-    //     Item::ForeignMod(item) => &item.attrs,
-    //     Item::Impl(item) => &item.attrs,
-    //     Item::Macro(item) => &item.attrs,
-    //     Item::Static(item) => &item.attrs,
-    //     Item::Struct(item) => &item.attrs,
-    //     Item::Trait(item) => &item.attrs,
-    //     Item::TraitAlias(item) => &item.attrs,
-    //     Item::Type(item) => &item.attrs,
-    //     Item::Union(item) => &item.attrs,
-    //     Item::Use(item) => &item.attrs,
-    //     _ => panic!("unkown item"),
-    // };
-    
-    let gen = quote! {
-        #[cfg_attr(feature = "ts", derive( serde::Serialize, ts_rs::TS ))]
-        #input
-    };
-    gen.into()
-}
