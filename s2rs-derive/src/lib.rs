@@ -115,7 +115,7 @@ pub fn ts_export(_args: TokenStream, input_stream: TokenStream) -> TokenStream {
     // };
     
     let gen = quote! {
-        #[cfg_attr(feature = "ts", derive( ts_rs::TS, serde::Serialize ), serde( rename_all = "camelCase" ))]
+        #[cfg_attr(feature = "ts", derive( serde::Serialize, ts_rs::TS ))]
         #input
     };
     gen.into()

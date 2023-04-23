@@ -1,10 +1,9 @@
-use s2rs_derive::{Forwarder, };
+use s2rs_derive::Forwarder;
 use reqwest::StatusCode;
 use super::{Api, utils::RequestBuilderUtils};
 use crate::json::{self, Parsable};
 use crate::cursor::Cursor;
 
-#[export_ts]
 #[derive(Debug)]
 pub struct CloudAction {
     pub by_name: String,

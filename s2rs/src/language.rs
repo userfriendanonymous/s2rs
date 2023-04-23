@@ -1,4 +1,7 @@
+use s2rs_derive::ts_export;
 
+
+#[ts_export]
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Language {
     Abkhazian,
@@ -78,6 +81,7 @@ pub enum Language {
     Ukrainian,
     SimplifiedChinese,
     TraditionalChinese,
+    Custom(&'static str)
 }
 
 impl Language {
@@ -85,7 +89,8 @@ impl Language {
         match self {
             Self::English => "en",
             Self::Russian => "ru",
-            _ => panic!("Your language `{self:?}` is not yet supported, please contact the crate author (me) if you need the support")
+            Self::Custom(name) => name,
+            _ => panic!("Your language `{self:?}` is not yet supported, use Language::Custom(\"...\")")
         }
     }
 }
