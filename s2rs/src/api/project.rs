@@ -236,12 +236,11 @@ impl Api {
         Ok(())
     }
 
-    #[cfg(feature = "bytes")]
-    pub async fn project_thumbnail(&self, id: u64, width: u16, height: u16) -> super::Result<bytes::Bytes> {
+    pub async fn project_thumbnail(&self, id: u64, width: u16, height: u16) -> super::Result<Vec<u8>> {
         let response = self.get_uploads(&format!["get_image/project/{id}_{width}x{height}.png"]).send().await?;
         let status = response.status();
         if status.is_success() || status.as_u16() == 302 {
-            Ok(response.bytes().await?)
+            Ok(response.bytes().await?.to_vec())
         } else {
             Err(status)?
         }

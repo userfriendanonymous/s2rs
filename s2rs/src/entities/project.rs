@@ -422,8 +422,7 @@ impl Project {
         self.api.report_user_comment(self.id).await
     }
 
-    #[cfg(feature = "bytes")]
-    pub async fn thumbnail(&self, width: u16, height: u16) -> api::Result<bytes::Bytes> {
+    pub async fn thumbnail(&self, width: u16, height: u16) -> api::Result<Vec<u8>> {
         self.api.project_thumbnail(self.id, width, height).await
     }
 
