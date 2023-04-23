@@ -140,7 +140,7 @@ impl Api {
     }
 
     pub async fn user_favorites(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project3>> {
-        let response = self.get(&format!("users/{name}/favorites/")).cursor_2(cursor).send_success().await?;
+        let response = self.get(&format!("users/{name}/favorites/")).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 

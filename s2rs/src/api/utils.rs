@@ -40,7 +40,7 @@ pub trait RequestBuilderUtils where Self: Sized {
     async fn send_success(self) -> Result<Response, super::Error>;
     async fn project_send_success(self, id: u64) -> Result<Response, super::Error>;
     fn cursor(self, cursor: impl Into<Cursor>) -> Self;
-    fn cursor_2(self, cursor: impl Into<Cursor>) -> Self;
+    fn cursor_limited(self, cursor: impl Into<Cursor>, limit: usize) -> Self;
     // fn json<T: Serialize>(self, data: T) -> Result<Self, serde_json::Error>;
     fn project_referer(self, id: u64) -> Self;
 }
@@ -68,10 +68,10 @@ impl RequestBuilderUtils for RequestBuilder {
         ])
     }
 
-    fn cursor_2(self, cursor: impl Into<Cursor>) -> Self {
+    fn cursor_limited(self, cursor: impl Into<Cursor>, limit: usize) -> Self {
         let cursor: Cursor = cursor.into();
         self.query(&[
-            ("limit", cursor.get_limit().map(|l| l.min(40))),
+            ("limit", cursor.get_limit().map(|v| v.min(limit))),
             ("offset", Some(cursor.start))
         ])
     }
