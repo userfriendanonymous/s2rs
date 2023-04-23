@@ -1,6 +1,6 @@
 [package]
 name = "s2rs"
-version = "0.2.9"
+version = "0.2.10"
 license = "MIT"
 edition = "2021"
 description = "An intuitive Rust -> Scratch API library"
@@ -17,7 +17,7 @@ file = ["reqwest/multipart"]
 # all = ["rss", "html", "web_socket", "stream", "bytes", "file"] # to be removed?
 
 [dependencies]
-s2rs-derive = "0.1.0"
+s2rs-derive = "0.1.2"
 reqwest = { version = "0.11.16", features = ["json"] }
 serde_json = "1.0.95"
 tokio = "1.27.0"

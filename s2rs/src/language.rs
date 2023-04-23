@@ -1,7 +1,4 @@
-use s2rs_derive::ts_export;
 
-
-#[ts_export]
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Language {
     Abkhazian,
