@@ -3,6 +3,8 @@ use crate::{Api, api::{UserInfo, FeaturedLabel, self}};
 use super::{User, FrontPage};
 use derivative::Derivative;
 use s2rs_derive::deref;
+#[cfg(feature = "stream")] use super::{stream::GeneralStream, MeProjectsLovedByFollowing, MeProjectsSharedByFollowing, MeViewedProjects};
+#[cfg(feature = "stream")] use crate::Cursor;
 
 #[deref(this)]
 #[derive(Derivative)]
@@ -24,7 +26,7 @@ impl Me {
 
 impl Me {
     pub async fn set_info(&self, info: &UserInfo) -> api::Result<()> {
-        self.api.set_user_info(info).await?;
+        self.api.set_profile_info(info).await?;
         Ok(())
     }
 
@@ -61,5 +63,20 @@ impl Me {
     #[cfg(feature = "cookie")]
     pub async fn login(&self, name: &str, password: &str) -> Result<super::Login, api::LoginError> {
         Ok(super::Login::new(self.api.login(name, password).await?, self.api.clone()))
+    }
+
+    #[cfg(feature = "stream")]
+    pub fn projects_loved_by_following(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<MeProjectsLovedByFollowing> {
+        GeneralStream::with_this(MeProjectsLovedByFollowing, cursor.into(), self.clone(), self.api.clone())
+    }
+
+    #[cfg(feature = "stream")]
+    pub fn projects_shared_by_following(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<MeProjectsSharedByFollowing> {
+        GeneralStream::with_this(MeProjectsSharedByFollowing, cursor.into(), self.clone(), self.api.clone())
+    }
+
+    #[cfg(feature = "stream")]
+    pub fn viewed_projects(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<MeViewedProjects> {
+        GeneralStream::with_this(MeViewedProjects, cursor.into(), self.clone(), self.api.clone())
     }
 }

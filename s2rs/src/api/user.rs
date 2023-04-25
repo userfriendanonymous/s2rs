@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use crate::{cursor::Cursor, json};
 use reqwest::StatusCode;
-use super::{Api, utils::RequestBuilderUtils, Project2};
+use super::{Api, utils::RequestBuilderUtils};
 
 // region: User
 #[derive(Deserialize, Debug)]
@@ -153,16 +153,6 @@ impl Api {
         Ok(response.json().await?)
     }
 
-    pub async fn projects_loved_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
-        let response = self.get(&format!["users/{name}/following/users/loves/"]).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
-    }
-
-    pub async fn projects_shared_by_following(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
-        let response = self.get(&format!["users/{name}/following/users/projects/"]).cursor(cursor).send_success().await?;
-        Ok(response.json().await?)
-    }
-
     pub async fn studio_managers(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<User>> {
         let response = self.get(&format!["studios/{id}/managers"]).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
@@ -198,12 +188,12 @@ impl Api {
         Ok(())
     }
 
-    pub async fn toggle_user_commenting(&self, name: &str) -> super::Result<()> {
-        let _ = self.post_site_api(&format!["comments/user/{name}/toggle-comments/"]).send_success().await?;
+    pub async fn toggle_profile_commenting(&self) -> super::Result<()> {
+        let _ = self.post_site_api(&format!["comments/user/{}/toggle-comments/", &self.name]).send_success().await?;
         Ok(())
     }
 
-    pub async fn set_user_info(&self, info: &UserInfo) -> super::Result<()> {
+    pub async fn set_profile_info(&self, info: &UserInfo) -> super::Result<()> {
         let _ = self.put_site_api(&format!["users/all/{}/", &self.name])
         .json(&info)
         .send_success().await?;

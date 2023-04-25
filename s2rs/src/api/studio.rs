@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use super::{Api, utils::RequestBuilderUtils};
 use crate::cursor::Cursor;
@@ -58,9 +58,11 @@ pub struct AddStudioProject {
     pub id: u64,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Default)]
 pub struct StudioInfo {
+    #[serde( skip_serializing_if = "Option::is_none" )]
     pub title: Option<String>,
+    #[serde( skip_serializing_if = "Option::is_none" )]
     pub description: Option<String>
 }
 
@@ -160,10 +162,7 @@ impl Api {
 
     pub async fn set_studio_info(&self, id: u64, info: &StudioInfo) -> super::Result<()> {
         let _ = self.put_site_api(&format!["galleries/all/{id}/"])
-        .json(&json!({
-            "title": info.title,
-            "description": info.description
-        }))
+        .json(info)
         .send_success().await?;
         Ok(())
     }

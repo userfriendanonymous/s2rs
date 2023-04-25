@@ -1,5 +1,5 @@
 use super::{Api, user::{UserProfileImages, UserHistory}, utils::RequestBuilderUtils};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use crate::cursor::Cursor;
 
@@ -128,6 +128,17 @@ pub struct ProjectRemix {
 }
 // endregion: Project extra
 
+
+#[derive(Debug, Clone, Serialize, Default)]
+pub struct ProjectInfo {
+    #[serde( skip_serializing_if = "Option::is_none" )]
+    pub title: Option<String>,
+    #[serde( skip_serializing_if = "Option::is_none" )]
+    pub instructions: Option<String>,
+    #[serde( skip_serializing_if = "Option::is_none" )]
+    pub description: Option<String>,
+}
+
 impl Api {
     pub async fn project_meta(&self, id: u64) -> super::Result<Project> {
         let response = self.get(&format!("projects/{id}/")).send_success().await?;
@@ -144,8 +155,18 @@ impl Api {
         Ok(response.json().await?)
     }
 
-    pub async fn user_views(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
-        let response = self.get(&format!("users/{name}/projects/recentlyviewed/")).cursor(cursor).send_success().await?;
+    pub async fn viewed_projects(&self, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
+        let response = self.get(&format!("users/{}/projects/recentlyviewed/", &self.name)).cursor(cursor).send_success().await?;
+        Ok(response.json().await?)
+    }
+
+    pub async fn projects_loved_by_following(&self, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
+        let response = self.get(&format!["users/{}/following/users/loves/", &self.name]).cursor(cursor).send_success().await?;
+        Ok(response.json().await?)
+    }
+
+    pub async fn projects_shared_by_following(&self, cursor: impl Into<Cursor>) -> super::Result<Vec<Project2>> {
+        let response = self.get(&format!["users/{}/following/users/projects/", &self.name]).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
@@ -209,29 +230,9 @@ impl Api {
         Ok(())
     }
 
-    pub async fn set_project_title(&self, id: u64, content: &str) -> super::Result<()> {
+    pub async fn set_project_info(&self, id: u64, info: &ProjectInfo) -> super::Result<()> {
         let _ = self.put(&format!("projects/{id}/"))
-        .json(&json!({
-            "title": content
-        }))
-        .project_send_success(id).await?;
-        Ok(())
-    }
-
-    pub async fn set_project_description(&self, id: u64, content: &str) -> super::Result<()> {
-        let _ = self.put(&format!("projects/{id}/"))
-        .json(&json!({
-            "description": content
-        }))
-        .project_send_success(id).await?;
-        Ok(())
-    }
-
-    pub async fn set_project_instructions(&self, id: u64, content: &str) -> super::Result<()> {
-        let _ = self.put(&format!("projects/{id}/"))
-        .json(&json!({
-            "instructions": content
-        }))
+        .json(info)
         .project_send_success(id).await?;
         Ok(())
     }

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use crate::api::{self, Api};
-use super::{User, stream::{GeneralStreamResult, GeneralStreamGen}, Project3, UserProject, Studio2, UserMeta, Project2, FollowingAction, UserProjectCommentMeta, UserProjectComment};
+use super::{User, stream::{GeneralStreamResult, GeneralStreamGen}, Project3, UserProject, Studio2, UserMeta, FollowingAction, UserProjectCommentMeta, UserProjectComment};
 #[cfg(feature = "html")] use super::UserCommentMeta;
 use async_trait::async_trait;
 use crate::cursor::Cursor;
@@ -64,42 +64,6 @@ use crate::cursor::Cursor;
     }
 }
 // endregion: UserFollowing
-
-// region: UserProjectsLovedByFollowing
-#[derive(Clone)] pub struct UserProjectsLovedByFollowing;
-#[async_trait] impl GeneralStreamGen for UserProjectsLovedByFollowing {
-    type Data = Project2;
-    type Error = api::Error;
-    type This = User;
-    async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(Project2::vec_new(api.projects_loved_by_following(&this.name, cursor).await?, api.clone()))
-    }
-}
-// endregion: UserProjectsLovedByFollowing
-
-// region: UserViews
-#[derive(Clone)] pub struct UserViews;
-#[async_trait] impl GeneralStreamGen for UserViews {
-    type Data = Project2;
-    type Error = api::Error;
-    type This = User;
-    async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(Project2::vec_new(api.projects_loved_by_following(&this.name, cursor).await?, api.clone()))
-    }
-}
-// endregion: UserViews
-
-// region: UserProjectsSharedByFollowing
-#[derive(Clone)] pub struct UserProjectsSharedByFollowing;
-#[async_trait] impl GeneralStreamGen for UserProjectsSharedByFollowing {
-    type Data = Project2;
-    type Error = api::Error;
-    type This = User;
-    async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(Project2::vec_new(api.projects_shared_by_following(&this.name, cursor).await?, api.clone()))
-    }
-}
-// endregion: UserProjectsSharedByFollowing
 
 // region: UserMessages
 #[derive(Clone)] pub struct UserMessages;

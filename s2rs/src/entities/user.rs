@@ -208,25 +208,6 @@ impl User {
         GeneralStream::with_this(UserFavorites, cursor.into(), self.clone(), self.api.clone())
     }
 
-    /// User's viewed projects
-    /// - *Requires authentication*
-    /// - `Requires crate feature: 'stream'`
-    /// # Examples
-    /// ```
-    /// # tokio_test::block_on(async {
-    /// # use s2rs::session::Session;
-    /// # let session = Session::new("YourUsername");
-    /// let user = session.user("griffpatch");
-    /// for project in user.views((0, 50)).collect().await.unwrap() {
-    ///     dbg![ &project ];
-    /// }
-    /// # })
-    /// ```
-    #[cfg(feature = "stream")]
-    pub fn views(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<UserViews> {
-        GeneralStream::with_this(UserViews, cursor.into(), self.clone(), self.api.clone())
-    }
-
     /// User's curating studios
     /// - `Requires crate feature: 'stream'`
     /// # Examples
@@ -279,16 +260,6 @@ impl User {
     #[cfg(feature = "stream")]
     pub fn following(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<UserFollowing> {
         GeneralStream::with_this(UserFollowing, cursor.into(), self.clone(), self.api.clone())
-    }
-    
-    #[cfg(feature = "stream")]
-    pub fn projects_loved_by_following(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<UserProjectsLovedByFollowing> {
-        GeneralStream::with_this(UserProjectsLovedByFollowing, cursor.into(), self.clone(), self.api.clone())
-    }
-
-    #[cfg(feature = "stream")]
-    pub fn projects_shared_by_following(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<UserProjectsSharedByFollowing> {
-        GeneralStream::with_this(UserProjectsSharedByFollowing, cursor.into(), self.clone(), self.api.clone())
     }
 
     #[cfg(feature = "stream")]
