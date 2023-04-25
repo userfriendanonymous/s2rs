@@ -70,7 +70,7 @@ impl Api {
         Ok(response.json().await?)
     }
 
-    pub async fn user_curating_studios(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Studio>> {
+    pub async fn user_curating_studios(&self, name: &str, cursor: impl Into<Cursor>) -> super::Result<Vec<Studio2>> {
         let response = self.get(&format!["users/{name}/studios/curate/"]).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }

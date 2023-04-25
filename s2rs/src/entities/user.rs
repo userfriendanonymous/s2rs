@@ -2,8 +2,8 @@
 use std::sync::Arc;
 use derivative::Derivative;
 use s2rs_derive::deref;
-use crate::api::{Api, self, UserNameCheck};
-use super::UserFeatured;
+use crate::{api::{Api, self, UserNameCheck}, utils::into_arc::IntoArc};
+use super::{UserFeatured, UserProject};
 #[cfg(feature = "stream")] use super::{stream::GeneralStream, user_stream::*};
 #[cfg(feature = "stream")] use crate::cursor::Cursor;
 
@@ -118,10 +118,10 @@ pub struct User {
 }
 
 impl User {
-    pub fn new(name: impl Into<Arc<String>>, api: Arc<Api>) -> Arc<Self> {
+    pub fn new(name: impl IntoArc<String>, api: Arc<Api>) -> Arc<Self> {
         Arc::new(Self {
             api,
-            name: name.into()
+            name: name.into_arc()
         })
     }
 }
@@ -324,6 +324,10 @@ impl User {
 
     pub async fn check(&self) -> api::Result<UserNameCheck> {
         self.api.check_user_name(&self.name).await
+    }
+
+    pub fn project(self: &Arc<Self>, id: u64) -> Arc<UserProject> {
+        UserProject::with_author(id, self.clone(), self.api.clone())
     }
 }
 // endregion: User

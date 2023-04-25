@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use s2rs_derive::Forwarder;
 
-use crate::{api::{Api, Tokens, self}, entities::{User, Project, Studio, Me, ForumTopic, ForumPost}};
+use crate::{api::{Api, Tokens, self}, entities::{User, Project, Studio, Me, ForumTopic, ForumPost}, utils::into_arc::IntoArc};
 
 pub struct ExtensionPipe {
     pub me: Arc<Me>,
@@ -43,8 +43,8 @@ impl Session {
         }, self.clone())
     }
 
-    pub fn new(name: impl Into<String>) -> Arc<Self> {
-        let name = Arc::new(name.into());
+    pub fn new(name: impl IntoArc<String>) -> Arc<Self> {
+        let name = name.into_arc();
         let api = Api::new(name.clone());
         Arc::new(Self {
             me: Me::with_this(User::new(name, api.clone()), api.clone()),
@@ -52,8 +52,8 @@ impl Session {
         })
     }
 
-    pub fn with_auth(name: impl Into<String>, tokens: &Tokens) -> Result<Arc<Self>, api::WithAuthError> {
-        let name = Arc::new(name.into());
+    pub fn with_auth(name: impl IntoArc<String>, tokens: &Tokens) -> Result<Arc<Self>, api::WithAuthError> {
+        let name = name.into_arc();
         let api = Api::with_auth(name.clone(), tokens)?;
         Ok(Arc::new(Self {
             me: Me::with_this(User::new(name, api.clone()), api.clone()),
@@ -62,8 +62,8 @@ impl Session {
     }
 
     #[cfg(feature = "cookie")]
-    pub async fn with_login(name: impl Into<String>, password: &str) -> Result<Arc<Self>, LoginError> {
-        let name: String = name.into();
+    pub async fn with_login(name: impl IntoArc<String>, password: &str) -> Result<Arc<Self>, LoginError> {
+        let name = name.into_arc();
         let session = Self::new(name.clone());
         let data = session.me().login(&name, password).await?;
         Ok(Self::with_auth(name, &Tokens {
@@ -73,8 +73,8 @@ impl Session {
         })?)
     }
 
-    pub fn user(&self, name: impl Into<String>) -> Arc<User> {
-        User::new(name.into(), self.api.clone())
+    pub fn user(&self, name: impl IntoArc<String>) -> Arc<User> {
+        User::new(name, self.api.clone())
     }
 
     pub fn project(&self, id: u64) -> Arc<Project> {

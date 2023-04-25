@@ -28,13 +28,13 @@ pub struct CommentAuthor {
 }
 
 impl Api {
-    pub async fn project_comments(&self, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
-        let response = self.get(&format!("comments/project/{id}")).cursor(cursor).send_success().await?;
+    pub async fn user_project_comments(&self, name: &str, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
+        let response = self.get(&format!("users/{name}/projects/{id}/comments/")).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 
-    pub async fn project_comment_replies(&self, id: u64, comment_id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
-        let response = self.get(&format!("comments/project/{id}/{comment_id}")).cursor(cursor).send_success().await?;
+    pub async fn user_project_comment_replies(&self, name: &str, id: u64, comment_id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {
+        let response = self.get(&format!("users/{name}/projects/{id}/comments/{comment_id}/replies/")).cursor(cursor).send_success().await?;
         Ok(response.json().await?)
     }
 

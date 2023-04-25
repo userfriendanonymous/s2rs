@@ -368,11 +368,6 @@ impl Project {
     }
 
     #[cfg(feature = "stream")]
-    pub fn comments(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<ProjectComments> {
-        GeneralStream::with_this(ProjectComments, cursor.into(), self.clone(), self.api.clone())
-    }
-
-    #[cfg(feature = "stream")]
     pub fn cloud_activity(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<ProjectCloudActivity> {
         GeneralStream::with_this(ProjectCloudActivity, cursor.into(), self.clone(), self.api.clone())
     }

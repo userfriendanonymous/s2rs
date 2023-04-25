@@ -1,5 +1,6 @@
 use std::sync::Arc;
-use crate::{UserWithId, api, Api};
+use crate::{api, Api};
+use super::UserWithId;
 
 #[derive(Clone, Debug)]
 pub struct Login {

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use reqwest::{StatusCode, Client, Method, RequestBuilder};
 use s2rs_derive::Forwarder;
-use crate::{cookies::Cookies, headers};
+use crate::{cookies::Cookies, headers, utils::into_arc::IntoArc};
 
 pub use studio::*;
 pub use user::*;
@@ -127,10 +127,10 @@ impl Api {
         }, self.clone())
     }
 
-    pub fn new(name: impl Into<Arc<String>>) -> Arc<Self> {
+    pub fn new(name: impl IntoArc<String>) -> Arc<Self> {
         Arc::new(Self {
             client: Arc::new(Client::new()),
-            name: name.into(),
+            name: name.into_arc(),
             headers: Headers::default()
         })
     }

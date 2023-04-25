@@ -17,6 +17,7 @@ pub use me::*;
 pub use front_page::*;
 pub use forum::*;
 pub use login::*;
+pub use user_project::*;
 
 pub mod user;
 pub mod project;
@@ -35,6 +36,7 @@ pub mod me;
 pub mod front_page;
 pub mod forum;
 pub mod login;
+pub mod user_project;
 
 #[cfg(feature = "stream")] pub mod stream;
 #[cfg(feature = "stream")] pub mod user_stream;

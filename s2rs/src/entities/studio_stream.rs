@@ -1,8 +1,7 @@
 use std::sync::Arc;
-use crate::StudioComment;
 use crate::api::{self, Api};
 use crate::cursor::Cursor;
-use super::{stream::{GeneralStreamGen, GeneralStreamResult}, UserMeta, Studio, StudioProject, StudioCommentMeta, StudioAction};
+use super::{stream::{GeneralStreamGen, GeneralStreamResult}, UserMeta, Studio, StudioProject, StudioCommentMeta, StudioAction, StudioComment};
 use async_trait::async_trait;
 
 // region: StudioCurators
