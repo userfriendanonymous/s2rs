@@ -18,7 +18,6 @@ pub use front_page::*;
 pub use forum::*;
 pub use login::*;
 pub use user_project::*;
-pub use me_stream::*;
 
 pub mod user;
 pub mod project;
