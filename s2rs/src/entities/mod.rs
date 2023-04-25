@@ -38,7 +38,6 @@ pub mod front_page;
 pub mod forum;
 pub mod login;
 pub mod user_project;
-pub mod me_stream;
 
 #[cfg(feature = "stream")] pub mod stream;
 #[cfg(feature = "stream")] pub mod user_stream;
@@ -46,9 +45,11 @@ pub mod me_stream;
 #[cfg(feature = "stream")] pub mod studio_stream;
 #[cfg(feature = "stream")] pub mod search;
 #[cfg(feature = "stream")] pub mod explore;
+#[cfg(feature = "stream")] pub mod me_stream;
 
 #[cfg(feature = "stream")] pub use user_stream::*;
 #[cfg(feature = "stream")] pub use project_stream::*;
 #[cfg(feature = "stream")] pub use studio_stream::*;
 #[cfg(feature = "stream")] pub use search::*;
 #[cfg(feature = "stream")] pub use explore::*;
+#[cfg(feature = "stream")] pub use me_stream::*;
