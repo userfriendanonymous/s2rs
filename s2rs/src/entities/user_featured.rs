@@ -1,11 +1,11 @@
 use std::sync::Arc;
 use super::{UserWithId, User, ProjectWithTitle};
-use crate::{api, Api};
+use crate::{api::{self, FeaturedLabel}, Api};
 
 #[derive(Debug)]
 pub struct UserFeatured {
     pub id: u64, // not sure what this field is for
-    pub label: String,
+    pub label: FeaturedLabel,
     pub label_id: Option<u64>,
     pub project: UserFeaturedProject,
     pub profile_image_url: String,

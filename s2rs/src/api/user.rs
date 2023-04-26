@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use crate::{cursor::Cursor, json};
 use reqwest::StatusCode;
-use super::{Api, utils::RequestBuilderUtils};
+use super::{Api, utils::RequestBuilderUtils, FeaturedLabel};
 
 // region: User
 #[derive(Deserialize, Debug)]
@@ -82,29 +82,6 @@ pub struct UserInfo {
     pub featured_id: Option<u64>,
     #[serde( rename = "featured_project_label", skip_serializing_if = "Option::is_none" )]
     pub featured_label: Option<FeaturedLabel>
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub enum FeaturedLabel {
-    FeaturedProject,
-    FeaturedTutorial,
-    WorkInProgress,
-    RemixThis,
-    MyFavoriteThings,
-    WhyIScratch,
-}
-
-impl FeaturedLabel {
-    pub fn as_id(&self) -> &str {
-        match self {
-            Self::FeaturedProject => "",
-            Self::FeaturedTutorial => "0",
-            Self::WorkInProgress => "1",
-            Self::RemixThis => "2",
-            Self::MyFavoriteThings => "3",
-            Self::WhyIScratch => "4"
-        }
-    }
 }
 
 impl Serialize for FeaturedLabel {

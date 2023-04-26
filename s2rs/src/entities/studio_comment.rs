@@ -2,9 +2,10 @@ use std::sync::Arc;
 use derivative::Derivative;
 use s2rs_derive::deref;
 
-use crate::{api::{self, Api}, cursor::Cursor};
+use crate::api::{self, Api};
 use super::{Studio, CommentAuthor};
 #[cfg(feature = "stream")] use super::{stream::GeneralStream, StudioCommentReplies};
+#[cfg(feature = "stream")] use crate::cursor::Cursor;
 
 // region: StudioComment
 #[derive(Derivative)]
