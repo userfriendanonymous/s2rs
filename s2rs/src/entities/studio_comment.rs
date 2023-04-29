@@ -2,19 +2,20 @@ use std::sync::Arc;
 use derivative::Derivative;
 use s2rs_derive::deref;
 
-use crate::api::{self, Api};
+use crate::api::{self, Api, SendComment};
 use super::{Studio, CommentAuthor};
 #[cfg(feature = "stream")] use super::{stream::GeneralStream, StudioCommentReplies};
 #[cfg(feature = "stream")] use crate::cursor::Cursor;
 
 // region: StudioComment
+#[allow(unused)]
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub struct StudioComment {
     pub id: u64,
     pub at: Arc<Studio>,
     #[derivative(Debug = "ignore")]
-    pub api: Arc<Api>
+    api: Arc<Api>
 }
 
 impl StudioComment {
@@ -29,6 +30,14 @@ impl StudioComment {
     #[cfg(feature = "stream")]
     pub async fn replies(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<StudioCommentReplies> {
         GeneralStream::with_this(StudioCommentReplies, cursor.into(), self.clone(), self.api.clone())
+    }
+
+    pub async fn reply(&self, content: impl Into<String>, to_id: Option<u64>) -> api::Result<()> {
+        self.api.send_studio_comment(self.at.id, &SendComment {
+            content: content.into(),
+            parent_id: Some(self.id),
+            to_id
+        }).await
     }
 }
 // endregion: StudioComment

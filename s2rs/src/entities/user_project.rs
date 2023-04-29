@@ -1,12 +1,13 @@
 use std::sync::Arc;
 use s2rs_derive::deref;
-use super::{Project, User, UserWithId};
+use super::{Project, User, UserWithId, ProjectComment};
 use derivative::Derivative;
 use crate::api::{self, Api};
 #[cfg(feature = "stream")] use super::{stream::GeneralStream, UserProjectCommentReplies, UserProjectComments};
 #[cfg(feature = "stream")] use crate::cursor::Cursor;
 
 // region: UserProject
+#[allow(unused)]
 #[deref(this)]
 #[derive(Derivative)]
 #[derivative(Debug)]
@@ -14,7 +15,7 @@ pub struct UserProject {
     pub this: Arc<Project>,
     pub author: Arc<User>,
     #[derivative(Debug = "ignore")]
-    pub api: Arc<Api>
+    api: Arc<Api>
 }
 
 impl UserProject {
@@ -54,10 +55,12 @@ impl CommentAuthor {
 // endregion: CommentAuthor
 
 // region: UserProjectComment
+#[allow(unused)]
+#[deref(this)]
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub struct UserProjectComment {
-    pub id: u64,
+    pub this: Arc<ProjectComment>,
     pub at: Arc<UserProject>,
     #[derivative(Debug = "ignore")]
     api: Arc<Api>,
@@ -66,8 +69,8 @@ pub struct UserProjectComment {
 impl UserProjectComment {
     pub fn with_at(id: u64, at: Arc<UserProject>, api: Arc<Api>) -> Arc<Self> {
         Arc::new(Self {
+            this: ProjectComment::with_at(id, at.this.clone(), api.clone()),
             at,
-            id,
             api
         })
     }

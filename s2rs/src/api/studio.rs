@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
-use serde_json::json;
-use super::{Api, utils::RequestBuilderUtils};
+use super::{Api, utils::RequestBuilderUtils, SendComment};
 use crate::cursor::Cursor;
 
 #[derive(Deserialize, Debug)]
@@ -121,14 +120,10 @@ impl Api {
         Ok(())
     }
 
-    pub async fn send_studio_comment(&self, id: u64, content: &str, parent_id: Option<u64>, to_id: Option<u64>) -> super::Result<()> {
-        let _ = self.post_site_api(&format!["comments/gallery/{id}/add/"])
-        .json(&json!({
-            "content": content,
-            "parent_id": parent_id,
-            "commentee_id": to_id
-        }))
-        .send_success().await?;
+    pub async fn send_studio_comment(&self, id: u64, data: &SendComment) -> super::Result<()> {
+        let response = self.post_proxy(&format!["comments/studio/{id}/"])
+        .json(&serde_json::to_string(data)?).send_success().await?;
+        dbg![ response.text().await.unwrap() ];
         Ok(())
     }
 

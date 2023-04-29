@@ -1,6 +1,6 @@
 use derivative::Derivative;
 use s2rs_derive::deref;
-use crate::api::{self, CommentContent};
+use crate::api::{self, CommentContent, SendComment};
 use super::{Api, UserWithId, User};
 use std::sync::Arc;
 
@@ -46,7 +46,7 @@ pub struct UserComment {
     #[derivative(PartialEq = "ignore")]
     pub profile: Arc<User>,
     #[derivative(Debug = "ignore", PartialEq = "ignore")]
-    pub api: Arc<Api>,
+    api: Arc<Api>,
 }
 
 impl UserComment {
@@ -64,6 +64,14 @@ impl UserComment {
 
     pub async fn report(&self) -> api::Result<()> {
         self.api.report_user_comment(self.id).await
+    }
+
+    pub async fn reply(&self, content: impl Into<String>, to_id: Option<u64>) -> api::Result<()> {
+        self.api.send_user_comment(&self.profile.name, &SendComment {
+            content: content.into(),
+            to_id,
+            parent_id: Some(self.id)
+        }).await
     }
 }
 // endregion: UserComment

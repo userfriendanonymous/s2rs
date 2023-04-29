@@ -16,6 +16,13 @@ impl IntoArc<String> for &str {
     }
 }
 
+
+impl IntoArc<String> for &String {
+    fn into_arc(self) -> Arc<String> {
+        Arc::new(self.to_owned())
+    }
+}
+
 impl IntoArc<String> for Arc<String> {
     fn into_arc(self) -> Arc<String> {
         self

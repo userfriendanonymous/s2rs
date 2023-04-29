@@ -1,9 +1,9 @@
 use s2rs_derive::Forwarder;
 use serde::{Deserialize, Serialize};
-use serde_json::{Value, json};
+use serde_json::Value;
 use crate::{cursor::Cursor, json};
 use reqwest::StatusCode;
-use super::{Api, utils::RequestBuilderUtils, FeaturedLabel};
+use super::{Api, utils::RequestBuilderUtils, FeaturedLabel, SendComment};
 
 // region: User
 #[derive(Deserialize, Debug)]
@@ -154,14 +154,9 @@ impl Api {
         Ok(response.json().await?)
     }
 
-    pub async fn send_user_comment(&self, name: &str, content: String, parent_id: Option<u64>, to_id: Option<u64>,) -> super::Result<()> {
-        let _ = self.post_site_api(&format!["comments/user/{name}/add/"])
-        .json(&json!({
-            "commentee_id": to_id,
-            "content": content,
-            "parent_id": parent_id
-        }))
-        .send_success().await?;
+    pub async fn send_user_comment(&self, name: &str, data: &SendComment) -> super::Result<()> {
+        self.post_site_api(&format!["comments/user/{name}/add/"])
+        .json(&serde_json::to_string(data)?).send_success().await?;
         Ok(())
     }
 

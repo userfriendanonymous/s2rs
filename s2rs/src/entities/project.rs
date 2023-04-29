@@ -2,9 +2,9 @@
 
 use std::sync::Arc;
 use derivative::Derivative;
-use crate::api::{Api, self};
+use crate::api::{Api, self, SendComment};
 #[cfg(feature = "stream")] use crate::cursor::Cursor;
-use super::User;
+use super::{User, ProjectComment};
 #[cfg(feature = "web_socket")] use super::Cloud;
 #[cfg(feature = "stream")] use super::{project_stream::*, stream::GeneralStream};
 use s2rs_derive::deref;
@@ -362,6 +362,10 @@ impl Project {
         Ok(ProjectMeta::with_this_this_this(self.api.project_meta(self.id).await?, self.clone(), self.api.clone()))
     }
 
+    pub fn comment(self: &Arc<Self>, id: u64) -> Arc<ProjectComment> {
+        ProjectComment::with_at(id, self.clone(), self.api.clone())
+    }
+
     #[cfg(feature = "stream")]
     pub fn remixes(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<ProjectRemixes> {
         GeneralStream::with_this(ProjectRemixes, cursor.into(), self.clone(), self.api.clone())
@@ -397,8 +401,8 @@ impl Project {
         self.api.unshare_project(self.id).await
     }
 
-    pub async fn send_comment(&self, content: &str) -> Result<(), api::Error> {
-        self.api.send_project_comment(self.id, content, None, None).await
+    pub async fn send_comment(&self, data: impl Into<SendComment>) -> Result<(), api::Error> {
+        self.api.send_project_comment(self.id, &data.into()).await
     }
 
     pub async fn delete_comment(&self, id: u64) -> Result<(), api::Error> {

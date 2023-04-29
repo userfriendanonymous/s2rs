@@ -2,8 +2,8 @@
 use std::sync::Arc;
 use derivative::Derivative;
 use s2rs_derive::deref;
-use crate::{api::{Api, self, UserNameCheck}, utils::into_arc::IntoArc};
-use super::{UserFeatured, UserProject};
+use crate::{api::{Api, self, UserNameCheck, SendComment}, utils::into_arc::IntoArc};
+use super::{UserFeatured, UserProject, UserComment};
 #[cfg(feature = "stream")] use super::{stream::GeneralStream, user_stream::*};
 #[cfg(feature = "stream")] use crate::cursor::Cursor;
 
@@ -140,6 +140,10 @@ impl User {
     /// ```
     pub async fn meta(self: &Arc<Self>) -> Result<Arc<UserMeta>, api::Error> {
         Ok(UserMeta::with_this_this(self.api.user_meta(&self.name).await?, self.clone(), self.api.clone()))
+    }
+
+    pub fn comment(self: &Arc<Self>, id: u64) -> Arc<UserComment> {
+        UserComment::with_profile(id, self.clone(), self.api.clone())
     }
 
     /// User's messages count
@@ -288,8 +292,8 @@ impl User {
         Ok(())
     }
 
-    pub async fn send_comment(&self, content: impl Into<String>) -> Result<(), api::Error> {
-        self.api.send_user_comment(&self.name, content.into(), None, None).await?;
+    pub async fn send_comment(&self, data: impl Into<SendComment>) -> Result<(), api::Error> {
+        self.api.send_user_comment(&self.name, &data.into()).await?;
         Ok(())
     }
 

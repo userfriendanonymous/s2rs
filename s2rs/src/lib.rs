@@ -1,7 +1,7 @@
 //! Access Scratch API with Rust
 pub use api::Api;
 pub use session::Session;
-pub use entities::*; // TO BE ENABLED # DISABLE IS DEV ONLY
+// pub use entities::*; // TO BE ENABLED # DISABLE IS DEV ONLY
 pub use language::Language;
 pub use cursor::Cursor;
 

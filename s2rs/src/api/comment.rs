@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use super::{Api, utils::RequestBuilderUtils};
 use crate::cursor::Cursor;
 
@@ -26,6 +26,31 @@ pub struct CommentAuthor {
     pub scratch_team: bool,
     pub image: String
 }
+
+// region: SendComment
+#[derive(Serialize)]
+pub struct SendComment {
+    pub content: String,
+    pub parent_id: Option<u64>,
+    pub to_id: Option<u64>,
+}
+
+impl From<String> for SendComment {
+    fn from(content: String) -> Self {
+        Self {
+            content,
+            parent_id: None,
+            to_id: None,
+        }
+    }
+}
+
+impl From<&str> for SendComment {
+    fn from(value: &str) -> Self {
+        value.to_owned().into()
+    }
+}
+// endregion: SendComment
 
 impl Api {
     pub async fn user_project_comments(&self, name: &str, id: u64, cursor: impl Into<Cursor>) -> super::Result<Vec<Comment>> {

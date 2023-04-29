@@ -3,9 +3,9 @@
 use std::sync::Arc;
 use derivative::Derivative;
 use s2rs_derive::deref;
-use crate::api::{self, Api, StudioInfo};
+use crate::api::{self, Api, StudioInfo, SendComment};
+use super::{Project, StudioComment};
 #[cfg(feature = "stream")] use crate::cursor::Cursor;
-use super::Project;
 #[cfg(feature = "stream")] use super::{studio_stream::*, stream::GeneralStream};
 
 // region: StudioWithTitle
@@ -226,6 +226,10 @@ impl Studio {
         Ok(StudioMeta::with_this_this(self.api.studio_meta(self.id).await?, self.clone()))
     }
 
+    pub fn comment(self: &Arc<Self>, id: u64) -> Arc<StudioComment> {
+        StudioComment::with_at(id, self.clone(), self.api.clone())
+    }
+
     /// Get studio curators
     /// - Results in [`GeneralStream`]
     /// # Examples
@@ -399,8 +403,8 @@ impl Studio {
     /// studio.send_comment("Hello everyone!").await.unwrap();
     /// # })
     /// ```
-    pub async fn send_comment(&self, content: &str) -> Result<(), api::Error> {
-        self.api.send_studio_comment(self.id, content, None, None).await
+    pub async fn send_comment(&self, data: impl Into<SendComment>) -> Result<(), api::Error> {
+        self.api.send_studio_comment(self.id, &data.into()).await
     }
 
     /// Follow studio

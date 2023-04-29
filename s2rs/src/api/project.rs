@@ -1,4 +1,4 @@
-use super::{Api, user::{UserProfileImages, UserHistory}, utils::RequestBuilderUtils};
+use super::{Api, user::{UserProfileImages, UserHistory}, utils::RequestBuilderUtils, SendComment};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use crate::cursor::Cursor;
@@ -175,13 +175,9 @@ impl Api {
         Ok(response.json().await?)
     }
 
-    pub async fn send_project_comment(&self, id: u64, content: &str, parent_id: Option<u64>, to_id: Option<u64>) -> super::Result<()> {
+    pub async fn send_project_comment(&self, id: u64, data: &SendComment) -> super::Result<()> {
         let _ = self.post_proxy(&format!["comments/project/{id}/"])
-        .json(&json!({
-            "commentee_id": to_id,
-            "content": content,
-            "parent_id": parent_id
-        }))
+        .json(&serde_json::to_string(data)?)
         .project_send_success(id).await?;
         Ok(())
     }

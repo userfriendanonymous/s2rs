@@ -14,6 +14,18 @@ pub struct Login {
 }
 
 impl Login {
+    // pub fn with_this_this(data: api::Login, this: Arc<User>, api: Arc<Api>) -> Self {
+    //     Self {
+    //         message: data.message,
+    //         messages: data.messages,
+    //         success: data.success,
+    //         tries_count: data.tries_count,
+    //         x_token: data.x_token,
+    //         session_token: data.session_token,
+    //         this: UserWithId::with_this(data.id, this, api)
+    //     }
+    // }
+
     pub fn new(data: api::Login, api: Arc<Api>) -> Self {
         Self {
             message: data.message,
