@@ -6,6 +6,7 @@ use crate::{api::{Api, self, UserNameCheck, SendComment}, utils::into_arc::IntoA
 use super::{UserFeatured, UserProject, UserComment};
 #[cfg(feature = "stream")] use super::{stream::GeneralStream, user_stream::*};
 #[cfg(feature = "stream")] use crate::cursor::Cursor;
+#[cfg(feature = "html")] use super::UserCommentMeta;
 
 // region: UserMeta
 /// General user metadata
@@ -276,10 +277,10 @@ impl User {
         GeneralStream::with_this(UserFollowingActivity, cursor.into(), self.clone(), self.api.clone())
     }
 
-    #[cfg(feature = "stream")]
+    // #[cfg(feature = "stream")]
     #[cfg(feature = "html")]
-    pub fn comments(self: &Arc<Self>, cursor: impl Into<Cursor>) -> GeneralStream<UserComments> {
-        GeneralStream::with_this(UserComments, cursor.into(), self.clone(), self.api.clone())
+    pub async fn comments(self: &Arc<Self>, page: Option<u8>) -> Result<Vec<Arc<UserCommentMeta>>, api::GetUserCommentsError> {
+        Ok(UserCommentMeta::vec_with_profile(self.api.user_comments(&self.name, page).await?, self.clone(), self.api.clone()))
     }
 
     pub async fn follow(&self) -> Result<(), api::Error> {

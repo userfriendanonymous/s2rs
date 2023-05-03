@@ -1,7 +1,6 @@
 use std::sync::Arc;
 use crate::api::{self, Api};
 use super::{User, stream::{GeneralStreamResult, GeneralStreamGen}, Project3, UserProject, Studio2, UserMeta, FollowingAction, UserProjectCommentMeta, UserProjectComment};
-#[cfg(feature = "html")] use super::UserCommentMeta;
 use async_trait::async_trait;
 use crate::cursor::Cursor;
 
@@ -90,17 +89,17 @@ use crate::cursor::Cursor;
 // endregion: UserFollowingActivity
 
 // region: UserComments
-#[cfg(feature = "html")]
-#[derive(Clone)] pub struct UserComments;
-#[cfg(feature = "html")]
-#[async_trait] impl GeneralStreamGen for UserComments {
-    type Data = UserCommentMeta;
-    type Error = api::GetUserCommentsError;
-    type This = User;
-    async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
-        Ok(UserCommentMeta::vec_with_profile(api.user_comments(&this.name, cursor).await?, this.clone(), api.clone()))
-    }
-}
+// #[cfg(feature = "html")]
+// #[derive(Clone)] pub struct UserComments;
+// #[cfg(feature = "html")]
+// #[async_trait] impl GeneralStreamGen for UserComments {
+//     type Data = UserCommentMeta;
+//     type Error = api::GetUserCommentsError;
+//     type This = User;
+//     async fn gen(&self, cursor: Cursor, this: &Arc<Self::This>, api: &Arc<Api>) -> GeneralStreamResult<Self> {
+//         Ok(UserCommentMeta::vec_with_profile(api.user_comments(&this.name, Some(cursor.start)).await?, this.clone(), api.clone()))
+//     }
+// }
 // endregion: UserComments
 
 // region: UserProjectComments
