@@ -2,7 +2,6 @@ use super::Api;
 #[cfg(feature = "html")] use html_parser::{Dom, Element};
 use s2rs_derive::Forwarder;
 use serde_json::json;
-#[cfg(feature = "html")] use crate::cursor::Cursor;
 use super::utils::RequestBuilderUtils;
 // const NUMBERS: &str = "1234567890";
 
@@ -161,8 +160,8 @@ pub enum GetUserCommentsError {
 
 impl Api {
     #[cfg(feature = "html")]
-    pub async fn user_comments(&self, name: &str, cursor: impl Into<Cursor>) -> Result<Vec<UserComment>, GetUserCommentsError> {
-        let response = self.get_site_api(&format!["comments/user/{name}/"]).cursor(cursor).send_success().await?;
+    pub async fn user_comments(&self, name: &str, page: Option<u8>) -> Result<Vec<UserComment>, GetUserCommentsError> {
+        let response = self.get_site_api(&format!["comments/user/{name}/"]).query(&[("page", page)]).send_success().await?;
         let data = response.text().await?;
 
         let dom = Dom::parse(&data).ok().ok_or(GetUserCommentsError::Parsing)?;
